@@ -1,0 +1,1346 @@
+============================================================
+ACADEMIC CONTROL
+UI/UX DESIGN SPECIFICATION
+============================================================
+
+VERSION: 1.0
+DESIGN OBJECTIVE:
+
+Create a calm, information-dense but easy-to-scan academic
+control interface where the student can immediately understand:
+
+1. What is next?
+2. What is pending?
+3. How am I progressing?
+4. What requires attention?
+
+
+============================================================
+1. UX PHILOSOPHY
+============================================================
+
+The application should feel like:
+
+    "My personal academic command center."
+
+It should NOT feel like:
+
+    - College ERP
+    - School management software
+    - LMS
+    - Learning platform
+    - Generic to-do list
+
+
+------------------------------------------------------------
+
+PRIMARY UX PRINCIPLE:
+
+    NEXT ACTION > INFORMATION OVERLOAD
+
+
+SECONDARY:
+
+    CURRENT PROGRESS
+
+
+TERTIARY:
+
+    HISTORY / ANALYTICS
+
+
+============================================================
+2. INFORMATION HIERARCHY
+============================================================
+
+GLOBAL:
+
+    Semester
+       ↓
+    Subject
+       ↓
+    Academic Work
+       ↓
+    Next Action
+
+
+HOME PRIORITY:
+
+    1. Next things
+    2. Current progress
+    3. Upcoming events
+    4. Smart suggestions
+
+
+============================================================
+3. NAVIGATION
+============================================================
+
+BOTTOM NAVIGATION:
+
+    HOME
+    SUBJECTS
+    CALENDAR
+    TASKS
+    HISTORY
+
+
+TOP BAR:
+
+    Current Semester
+    Notifications
+    Profile/Settings
+
+
+============================================================
+4. HOME SCREEN
+============================================================
+
+The Home Screen is the most important screen.
+
+
+------------------------------------------------------------
+4.1 HEADER
+------------------------------------------------------------
+
+Example:
+
+    Good evening
+
+    Semester 03
+
+    [Notifications]
+
+
+The greeting is optional.
+
+The semester selector is important.
+
+
+------------------------------------------------------------
+4.2 NEXT THINGS SECTION
+------------------------------------------------------------
+
+Largest section.
+
+Title:
+
+    NEXT
+
+
+Each card:
+
+    Subject
+    Work title
+    Status
+    Due date
+    Optional urgency
+
+
+Example:
+
+    ┌──────────────────────────────────┐
+    │ DPCO                             │
+    │ Assignment 2                     │
+    │ Due tomorrow                     │
+    │                                  │
+    │ [Not Finished]             →     │
+    └──────────────────────────────────┘
+
+
+Another:
+
+    ┌──────────────────────────────────┐
+    │ Physics Laboratory               │
+    │ Experiment 04 — Record           │
+    │ 3 experiments pending            │
+    │                                  │
+    │ [Continue]                  →    │
+    └──────────────────────────────────┘
+
+
+------------------------------------------------------------
+4.3 CURRENT PROGRESS
+------------------------------------------------------------
+
+Two separate metrics MUST be visible.
+
+    TASK PROGRESS
+    72%
+
+    LEARNING PROGRESS
+    61%
+
+
+They must never visually appear as one metric.
+
+
+------------------------------------------------------------
+4.4 SUBJECT PROGRESS
+------------------------------------------------------------
+
+Example:
+
+    CURRENT PROGRESS
+
+    DPCO                     73%
+    Discrete Mathematics     58%
+    OOP                      81%
+    AI                       47%
+    DSA                      66%
+
+
+The user can tap a subject.
+
+
+------------------------------------------------------------
+4.5 UPCOMING
+------------------------------------------------------------
+
+Show only the most relevant upcoming items.
+
+Example:
+
+    UPCOMING
+
+    CAT-I
+    5 Oct
+
+    Assignment-II
+    6 Oct
+
+    Discrete Mathematics Exam
+    7 Oct
+
+
+Dates are sourced from imported/confirmed data.
+
+
+------------------------------------------------------------
+4.6 SMART SUGGESTION
+------------------------------------------------------------
+
+One suggestion at a time.
+
+Example:
+
+    SUGGESTED
+
+    Discrete Mathematics — Unit II
+
+    Confidence: 4/10
+    Learning: 45%
+    CAT approaching
+
+    [Create Task]
+
+
+The explanation should be visible.
+
+
+============================================================
+5. SUBJECTS SCREEN
+============================================================
+
+Header:
+
+    SUBJECTS
+
+Filter:
+
+    All
+    Theory
+    Laboratory
+
+
+Cards:
+
+    Subject Name
+    Code
+    Credits
+    Task Progress
+    Learning Progress
+    Confidence
+
+
+Example:
+
+    ┌───────────────────────────────────┐
+    │ Discrete Mathematics              │
+    │ MA23311                           │
+    │                                   │
+    │ Tasks        70%                  │
+    │ Learning     58%                  │
+    │ Confidence   6/10                 │
+    └───────────────────────────────────┘
+
+
+============================================================
+6. SUBJECT DETAIL — THEORY
+============================================================
+
+Header:
+
+    Discrete Mathematics
+
+Quick stats:
+
+    Tasks       70%
+    Learning    58%
+    Confidence  6/10
+
+
+Navigation:
+
+    Overview
+    Chapters
+    Assignments
+    CATs
+    Internal
+    History
+
+
+------------------------------------------------------------
+6.1 OVERVIEW
+------------------------------------------------------------
+
+Show:
+
+    Next task
+    Upcoming exam
+    Pending assignments
+    Current CAT marks
+    Learning progress
+    Confidence
+
+
+------------------------------------------------------------
+6.2 CHAPTERS
+------------------------------------------------------------
+
+Each chapter card:
+
+    Unit II
+
+    Learning
+    ███████░░░ 70%
+
+    Confidence
+    6/10
+
+    Assignments
+    1 / 2 complete
+
+
+Tap → Chapter Detail.
+
+
+------------------------------------------------------------
+6.3 CHAPTER DETAIL
+------------------------------------------------------------
+
+Show:
+
+    Unit II
+
+    Learning Progress
+    [ slider / numeric editor ]
+
+    Confidence
+    [ 0–10 control ]
+
+    Assignments
+    Assignment 1
+    Assignment 2
+
+
+The user manually controls learning and confidence.
+
+
+============================================================
+7. ASSIGNMENTS SCREEN
+============================================================
+
+Each assignment:
+
+    Assignment name
+
+    Subject
+    Unit
+
+    Due:
+    06 Oct
+
+    Status:
+    Not Finished
+
+
+Status interaction should be quick.
+
+Example:
+
+    Tap status
+          ↓
+
+    Not Finished
+    Completed
+    Submitted on Hand
+    Submitted on Moodle
+    Graded
+
+
+------------------------------------------------------------
+7.1 GRADED STATE
+------------------------------------------------------------
+
+When changing to:
+
+    GRADED
+
+show:
+
+    Marks
+
+    Obtained [ 8 ]
+    Out of    [ 10 ]
+
+    [Save]
+
+
+============================================================
+8. LAB SUBJECT UI
+============================================================
+
+Example:
+
+    Physics Laboratory
+
+
+Quick stats:
+
+    Experiments
+    7 / 10
+
+    Record
+    7 / 10
+
+    Observation
+    6 / 10
+
+
+Navigation:
+
+    Overview
+    Experiments
+    Record
+    Observation
+    Cycle Tests
+    Practical Exam
+    History
+
+
+------------------------------------------------------------
+8.1 EXPERIMENT LIST
+------------------------------------------------------------
+
+    Experiment 01     ✓
+    Experiment 02     ✓
+    Experiment 03     ✓
+    Experiment 04     ◐
+    Experiment 05     ○
+
+
+Legend:
+
+    ✓ Completed
+    ◐ In progress
+    ○ Not completed
+
+
+------------------------------------------------------------
+8.2 RECORD
+------------------------------------------------------------
+
+Display:
+
+    RECORD
+
+    Completed:
+    7 / 10
+
+    Submitted:
+    5 / 10
+
+
+Individual rows:
+
+    Exp 01     Completed
+    Exp 02     Submitted
+    Exp 03     Completed
+
+
+------------------------------------------------------------
+8.3 OBSERVATION
+------------------------------------------------------------
+
+Separate dashboard:
+
+    OBSERVATION
+
+    Completed:
+    6 / 10
+
+    Submitted:
+    5 / 10
+
+
+Never combine Record and Observation into one progress metric.
+
+
+============================================================
+9. EXAMS
+============================================================
+
+Subject exam section:
+
+    UPCOMING
+
+    CAT-I
+    05 Oct
+    AN
+
+
+After marks are entered:
+
+    CAT-I
+    42 / 50
+
+
+Semester examination:
+
+    Date
+    Time
+
+No semester exam marks field when the configured exam type
+does not require marks tracking.
+
+
+============================================================
+10. CALENDAR SCREEN
+============================================================
+
+Views:
+
+    Month
+    Week
+    Agenda
+
+
+Events visually distinguish:
+
+    Official Academic Event
+
+from:
+
+    Personal Task
+
+
+Example:
+
+    CAT-I
+    Official
+
+
+    Finish DPCO Assignment
+    Personal
+
+
+============================================================
+11. CALENDAR IMPORT
+============================================================
+
+Entry point:
+
+    + Import Academic Calendar
+
+
+Screen:
+
+    Upload Academic Calendar
+
+    [ Select PDF ]
+    [ Select Image ]
+
+    Supported:
+    PDF / Image
+
+
+------------------------------------------------------------
+PROCESSING
+------------------------------------------------------------
+
+    Analyzing document...
+
+    Detecting:
+    Dates
+    Events
+    Academic milestones
+
+
+------------------------------------------------------------
+REVIEW SCREEN
+------------------------------------------------------------
+
+    34 items detected
+
+    CAT-I
+    05 Oct → 09 Oct
+    ✓ Confirmed
+
+    Unit III Completion
+    29 Oct
+    ✓ Confirmed
+
+    Assignment Deadline
+    22 Sep
+    ⚠ Review
+
+
+Actions:
+
+    Confirm
+    Edit
+    Delete
+
+
+The system should show uncertain extraction instead of hiding it.
+
+
+============================================================
+12. EXAM TIMETABLE IMPORT
+============================================================
+
+Entry:
+
+    Import Examination Timetable
+
+
+Step 1:
+
+    What applies to you?
+
+    Department
+    Programme
+    Section
+
+
+Step 2:
+
+    Upload timetable
+
+
+Step 3:
+
+    Detected schedules
+
+
+Example:
+
+    Computer Science and Engineering
+    F / G / H / I Sections
+
+    [Use this schedule]
+
+
+Step 4:
+
+    Review exams
+
+
+Step 5:
+
+    Confirm
+
+
+The UI should clearly prevent unrelated programme schedules from
+being accidentally imported.
+
+
+============================================================
+13. TASK SCREEN
+============================================================
+
+Tabs:
+
+    TODAY
+    UPCOMING
+    PENDING
+    COMPLETED
+
+
+Each task:
+
+    Subject
+    Task
+    Due date
+    Status
+
+
+Sorting:
+
+    Default:
+    Most relevant / nearest upcoming
+
+
+Filters:
+
+    Subject
+    Type
+    Status
+    Date
+
+
+============================================================
+14. TASK DETAIL
+============================================================
+
+Example:
+
+    DPCO
+    Assignment 2
+
+
+    Chapter:
+    Unit III
+
+    Due:
+    23 Oct
+
+    Status:
+    Not Finished
+
+
+Actions:
+
+    Mark Completed
+    Submit on Hand
+    Submit on Moodle
+    Mark Graded
+
+
+When graded:
+
+    Enter 8 / 10
+
+
+History:
+
+    Created
+    Completed
+    Submitted
+    Graded
+
+
+============================================================
+15. HISTORY SCREEN
+============================================================
+
+Timeline design.
+
+Example:
+
+    OCT 05
+
+    08:30 PM
+    DPCO Assignment 2
+
+    Submitted on Moodle
+
+    06:15 PM
+    Discrete Mathematics
+
+    Learning progress updated to 70%
+
+
+But automatic history and manual history must be visually
+distinguishable when useful.
+
+
+------------------------------------------------------------
+15.1 MANUAL HISTORY
+------------------------------------------------------------
+
+Button:
+
+    + Add History
+
+
+Form:
+
+    Date
+    Subject
+    Title
+    Description
+    Category
+    Attachment
+
+
+Example:
+
+    Date:
+    04 Oct 2026
+
+    Title:
+    Finished all DPCO Unit II preparation
+
+    Description:
+    ...
+
+
+============================================================
+16. SUBMISSION HISTORY
+============================================================
+
+Assignment detail:
+
+    SUBMISSION HISTORY
+
+    04 Oct
+    Submitted on Hand
+
+    05 Oct
+    Submitted on Moodle
+
+    07 Oct
+    Graded
+    8 / 10
+
+
+Same pattern for:
+
+    Record
+    Observation
+
+
+============================================================
+17. INTERNAL MARK SCREEN
+============================================================
+
+Subject:
+
+    DPCO
+
+
+CAT:
+
+    CAT-I
+    42 / 50
+
+    CAT-II
+    44 / 50
+
+    CAT-III
+    46 / 50
+
+
+Assignments:
+
+    Unit I
+    9 / 10
+
+    Unit II
+    8 / 10
+
+
+Result:
+
+    Current Internal Mark
+    XX / XX
+
+
+Formula/configuration:
+
+    View Calculation
+
+
+The application must expose enough information for the user
+to understand how the result was calculated.
+
+
+============================================================
+18. CONFIDENCE UI
+============================================================
+
+Subject:
+
+    Confidence
+
+    0 ─────●──── 10
+            6
+
+
+Chapter:
+
+    Unit III
+
+    Confidence
+
+    3 / 10
+
+
+Interaction:
+
+    Slider
+    Numeric value
+    + / − controls
+
+
+Do not allow an automatic algorithm to silently change this value.
+
+
+============================================================
+19. LEARNING PROGRESS UI
+============================================================
+
+Chapter:
+
+    Learning Progress
+
+    0% ───────── 100%
+
+
+Possible UI:
+
+    Slider
+    Number field
+
+
+User updates manually.
+
+No relationship to assignment status should be assumed.
+
+
+============================================================
+20. SETTINGS
+============================================================
+
+Sections:
+
+    Profile
+    Semester
+    Notifications
+    Google Calendar
+    Reminder Preferences
+    Data & Sync
+    Documents
+    Internal Mark Rules
+    Backup
+    Account
+
+
+============================================================
+21. SEMESTER SETUP UX
+============================================================
+
+NEW SEMESTER
+
+
+Step 1:
+
+    Academic Year
+
+
+Step 2:
+
+    Semester
+
+
+Step 3:
+
+    Year of Study
+
+
+Step 4:
+
+    Department
+
+
+Step 5:
+
+    Programme
+
+
+Step 6:
+
+    Section
+
+
+Step 7:
+
+    Subjects
+
+
+Step 8:
+
+    Upload Academic Calendar
+
+
+Step 9:
+
+    Review extracted events
+
+
+Step 10:
+
+    Upload Exam Timetable
+
+
+Step 11:
+
+    Review filtered timetable
+
+
+Step 12:
+
+    Google Calendar setup
+
+
+Step 13:
+
+    Finish
+
+
+============================================================
+22. DESIGN SYSTEM
+============================================================
+
+DESIGN STYLE:
+
+    Modern
+    Minimal
+    Serious
+    Technical
+    Student-focused
+
+
+The interface should prioritize:
+
+    Readability
+    Speed
+    Clear hierarchy
+    Low cognitive load
+
+
+Avoid:
+
+    Excessive gradients
+    Decorative dashboards
+    Overloaded charts
+    Excessive animation
+    Gamification that distracts from academic work
+
+
+============================================================
+23. COLOR SEMANTICS
+============================================================
+
+Do not use colors merely for decoration.
+
+Color should communicate:
+
+    Normal
+    Attention
+    Urgent
+    Complete
+    Warning
+
+
+Example semantic roles:
+
+    Primary
+    Success
+    Warning
+    Critical
+    Neutral
+
+
+The actual visual palette should be defined as design tokens
+so it can be changed without modifying components.
+
+
+============================================================
+24. TYPOGRAPHY
+============================================================
+
+Priorities:
+
+    Large readable headings
+    Strong task titles
+    Secondary metadata
+    Clear numerical statistics
+
+
+Hierarchy:
+
+    H1
+    H2
+    Section heading
+    Body
+    Metadata
+    Caption
+
+
+Numeric values such as:
+
+    72%
+    8/10
+    42/50
+
+should be visually prominent.
+
+
+============================================================
+25. COMPONENT LIBRARY
+============================================================
+
+CORE COMPONENTS:
+
+    Button
+    Icon Button
+    Card
+    Badge
+    Progress Bar
+    Progress Ring
+    Slider
+    Chip
+    Dropdown
+    Bottom Sheet
+    Modal
+    Date Picker
+    Calendar
+    Timeline Item
+    Task Row
+    Subject Card
+    Assignment Card
+    Exam Card
+    Experiment Row
+    Empty State
+    Loading State
+    Error State
+
+
+============================================================
+26. INTERACTION PRINCIPLES
+============================================================
+
+COMMON ACTIONS SHOULD REQUIRE FEW TAPS.
+
+Example:
+
+    Assignment
+       ↓
+    Status
+       ↓
+    Submitted on Moodle
+
+
+Rather than:
+
+    Assignment
+       ↓
+    Edit
+       ↓
+    Advanced
+       ↓
+    Status
+       ↓
+    Save
+
+
+Quick state updates should be supported directly from cards/rows.
+
+
+============================================================
+27. EMPTY STATES
+============================================================
+
+Subjects empty:
+
+    "No subjects added yet."
+
+    [Add Subject]
+
+
+Assignments empty:
+
+    "No assignments yet."
+
+
+History empty:
+
+    "Your academic history will appear here."
+
+
+Calendar empty:
+
+    "No academic events available."
+
+    [Import Calendar]
+
+
+============================================================
+28. LOADING STATES
+============================================================
+
+Document processing:
+
+    Uploading...
+    Analyzing...
+    Extracting...
+    Preparing review...
+
+
+Never show a blank screen.
+
+
+============================================================
+29. ERROR STATES
+============================================================
+
+Example:
+
+    "We couldn't extract the timetable."
+
+    [Try Again]
+    [Enter Manually]
+
+
+Network:
+
+    "You're offline.
+     Your changes are saved on this device."
+
+
+============================================================
+30. ACCESSIBILITY
+============================================================
+
+Requirements:
+
+- Readable text
+- Adequate contrast
+- Touch targets large enough for mobile
+- Icons accompanied by text where ambiguous
+- Screen-reader labels
+- Do not rely only on color to represent status
+
+
+============================================================
+31. RESPONSIVE BEHAVIOR
+============================================================
+
+ANDROID PHONE:
+
+    Primary target
+
+
+LARGER PHONE:
+
+    More information per row
+
+
+TABLET:
+
+    Two-column layouts where useful
+
+
+iOS:
+
+    Same information architecture
+    Platform-appropriate controls where necessary
+
+
+============================================================
+32. HOME SCREEN FINAL STRUCTURE
+============================================================
+
+                    HOME
+                     │
+          ┌──────────┴──────────┐
+          │                     │
+       NEXT THINGS        CURRENT PROGRESS
+          │                     │
+      Task cards          Task Progress
+                          Learning Progress
+                          Subject Progress
+          │                     │
+          └──────────┬──────────┘
+                     │
+                 UPCOMING
+                     │
+                 SUGGESTED
+                     │
+                   REVIEW
+
+
+============================================================
+33. UX SUCCESS CRITERIA
+============================================================
+
+Within approximately a few seconds of opening the app, the user
+should know:
+
+    What is next?
+
+    What is pending?
+
+    What is due soon?
+
+    How is my task progress?
+
+    How is my learning progress?
+
+    Which subject requires attention?
+
+
+For a subject, the user should quickly know:
+
+    What is the next piece of work?
+
+    What assignments are pending?
+
+    What is my learning progress?
+
+    What is my confidence?
+
+    What exam is next?
+
+    What marks have I received?
+
+
+============================================================
+34. FINAL UX PRINCIPLE
+============================================================
+
+Academic Control should never force the student to search through
+five screens to discover a task that is due tomorrow.
+
+The application should surface the next relevant academic action
+first.
+
+The student remains responsible for deciding and performing the
+work.
+
+The application provides:
+
+    VISIBILITY
+    STRUCTURE
+    TRACKING
+    REMINDERS
+    HISTORY
+    CONTEXT
+
+
+============================================================
+END OF UI/UX DESIGN SPECIFICATION
+============================================================

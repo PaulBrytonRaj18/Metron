@@ -1,0 +1,1077 @@
+============================================================
+ACADEMIC CONTROL
+COLOR SPECIFICATION
+============================================================
+
+VERSION: 1.0
+PRIMARY VISUAL IDENTITY:
+
+    Flame Scarlet
+    Near Black
+    Warm Ivory
+
+CORE PALETTE:
+
+    #CD202C
+    #0D0D0D
+    #FFFFF0
+
+
+============================================================
+1. BRAND COLORS
+============================================================
+
+PRIMARY — FLAME SCARLET
+
+    HEX:        #CD202C
+    RGB:        205, 32, 44
+
+Purpose:
+    Primary brand identity
+    Primary actions
+    Active navigation
+    Important highlights
+    Progress indicators
+    Selected states
+    Focus states
+    Key visual emphasis
+
+
+SECONDARY — NEAR BLACK
+
+    HEX:        #0D0D0D
+    RGB:        13, 13, 13
+
+Purpose:
+    Application background
+    Main canvas
+    Full-screen backgrounds
+    Navigation background where applicable
+
+
+ACCENT — WARM IVORY
+
+    HEX:        #FFFFF0
+    RGB:        255, 255, 240
+
+Purpose:
+    Premium visual accent
+    Important secondary highlights
+    Selected content emphasis
+    Special headings
+    Empty-state / decorative highlights
+    Important numerical emphasis where appropriate
+
+
+============================================================
+2. NEUTRAL SYSTEM
+============================================================
+
+BACKGROUND
+
+    Background:
+        #0D0D0D
+
+    Surface:
+        #181818
+
+    Surface Elevated:
+        #222222
+
+
+BORDERS
+
+    Border:
+        #2A2A2A
+
+
+TEXT
+
+    Primary:
+        #FFFFFF
+
+    Secondary:
+        #A3A3A3
+
+
+============================================================
+3. SEMANTIC COLORS
+============================================================
+
+SUCCESS
+
+    HEX:
+        #22C55E
+
+Used for:
+
+    Completed
+    Successfully submitted
+    Successful sync
+    Positive confirmation
+    Completed academic work
+
+
+WARNING
+
+    HEX:
+        #F59E0B
+
+Used for:
+
+    Approaching deadline
+    Attention required
+    Low progress warning
+    Pending confirmation
+    Medium-risk states
+
+
+ERROR
+
+    HEX:
+        #EF4444
+
+Used for:
+
+    Failed operation
+    Invalid data
+    Critical deadline
+    Parsing failure
+    Sync failure
+    Destructive actions
+
+
+INFO
+
+    HEX:
+        #3B82F6
+
+Used for:
+
+    Information
+    Informational notifications
+    Document processing
+    Neutral system messages
+    Supporting contextual indicators
+
+
+============================================================
+4. COLOR ROLE TOKENS
+============================================================
+
+BRAND
+
+    color.brand.primary:
+        #CD202C
+
+    color.brand.background:
+        #0D0D0D
+
+    color.brand.accent:
+        #FFFFF0
+
+
+SURFACE
+
+    color.surface.base:
+        #0D0D0D
+
+    color.surface.default:
+        #181818
+
+    color.surface.elevated:
+        #222222
+
+
+TEXT
+
+    color.text.primary:
+        #FFFFFF
+
+    color.text.secondary:
+        #A3A3A3
+
+
+BORDER
+
+    color.border.default:
+        #2A2A2A
+
+
+SEMANTIC
+
+    color.success:
+        #22C55E
+
+    color.warning:
+        #F59E0B
+
+    color.error:
+        #EF4444
+
+    color.info:
+        #3B82F6
+
+
+============================================================
+5. PRIMARY COLOR USAGE
+============================================================
+
+FLAME SCARLET — #CD202C
+
+Use for:
+
+    Primary CTA
+    Add button
+    Save button
+    Confirm button
+    Active tab
+    Active navigation item
+    Selected filter
+    Progress bar
+    Progress ring
+    Important action
+    Focus indicator
+    Important academic highlight
+
+
+DO NOT use Flame Scarlet for:
+
+    Large continuous text areas
+    Entire card backgrounds
+    Full-screen backgrounds
+    Every icon
+    Every status
+
+
+The color should communicate:
+
+    "This matters."
+    "This is active."
+    "Take action here."
+
+
+============================================================
+6. BACKGROUND USAGE
+============================================================
+
+NEAR BLACK — #0D0D0D
+
+Primary application background.
+
+Use for:
+
+    Screen background
+    Main dashboard background
+    Calendar background
+    Navigation background
+    Modal background where appropriate
+
+
+SURFACE — #181818
+
+Use for:
+
+    Subject cards
+    Assignment cards
+    Task cards
+    Section containers
+    List items
+    Standard panels
+
+
+SURFACE ELEVATED — #222222
+
+Use for:
+
+    Bottom sheets
+    Dialogs
+    Floating components
+    Important cards
+    Expanded sections
+    High-priority content
+
+
+============================================================
+7. TEXT USAGE
+============================================================
+
+WHITE — #FFFFFF
+
+Use for:
+
+    Page headings
+    Subject names
+    Task titles
+    Important numbers
+    Primary labels
+    Main body text
+
+
+SECONDARY GRAY — #A3A3A3
+
+Use for:
+
+    Dates
+    Supporting information
+    Metadata
+    Descriptions
+    Secondary labels
+    Disabled/less-important information
+
+
+WARM IVORY — #FFFFF0
+
+Use selectively for:
+
+    Brand-level emphasis
+    Special statistics
+    Important secondary headings
+    Premium visual moments
+
+
+IMPORTANT:
+
+Warm Ivory should NOT replace white as the default text color.
+
+
+============================================================
+8. PROGRESS COLOR SYSTEM
+============================================================
+
+PRIMARY PROGRESS
+
+    #CD202C
+
+
+Use for:
+
+    Learning progress
+    Task progress
+    Chapter progress
+    Subject progress
+
+
+Example:
+
+    72%
+    ██████████████░░░░
+
+
+The filled section:
+
+    #CD202C
+
+The unfilled section:
+
+    #2A2A2A
+
+
+------------------------------------------------------------
+
+PROGRESS MUST REMAIN VISUALLY DISTINCT
+
+Task Progress:
+
+    #CD202C
+
+Learning Progress:
+
+    #FFFFF0
+
+
+This makes the two independent metrics easier to recognize.
+
+
+============================================================
+9. STATUS COLOR SYSTEM
+============================================================
+
+NOT FINISHED
+
+    #A3A3A3
+
+COMPLETED
+
+    #22C55E
+
+SUBMITTED ON HAND
+
+    #3B82F6
+
+SUBMITTED ON MOODLE
+
+    #3B82F6
+
+GRADED
+
+    #FFFFF0
+
+DUE SOON
+
+    #F59E0B
+
+CRITICAL / DUE TODAY
+
+    #EF4444
+
+
+Status colors should support the text label.
+
+Do NOT communicate status through color alone.
+
+
+============================================================
+10. PRIORITY COLOR SYSTEM
+============================================================
+
+NORMAL
+
+    #A3A3A3
+
+
+ATTENTION
+
+    #F59E0B
+
+
+HIGH PRIORITY
+
+    #CD202C
+
+
+CRITICAL
+
+    #EF4444
+
+
+Completed:
+
+    #22C55E
+
+
+============================================================
+11. CALENDAR COLORS
+============================================================
+
+OFFICIAL ACADEMIC EVENT
+
+    Primary:
+        #CD202C
+
+
+PERSONAL TASK
+
+    Accent:
+        #FFFFF0
+
+
+EXAM
+
+    Warning:
+        #F59E0B
+
+
+COMPLETED ITEM
+
+    Success:
+        #22C55E
+
+
+USER-CREATED EVENT
+
+    Info:
+        #3B82F6
+
+
+The exact visual treatment can use borders, dots, icons or badges
+rather than filling entire calendar cells.
+
+
+============================================================
+12. DASHBOARD COLOR HIERARCHY
+============================================================
+
+Recommended hierarchy:
+
+    BACKGROUND
+        #0D0D0D
+
+        ↓
+
+    STANDARD CARDS
+        #181818
+
+        ↓
+
+    ELEVATED / IMPORTANT CARDS
+        #222222
+
+        ↓
+
+    PRIMARY ACTION
+        #CD202C
+
+        ↓
+
+    PRIMARY TEXT
+        #FFFFFF
+
+        ↓
+
+    SECONDARY TEXT
+        #A3A3A3
+
+        ↓
+
+    SPECIAL ACCENT
+        #FFFFF0
+
+
+============================================================
+13. CTA SPECIFICATION
+============================================================
+
+PRIMARY BUTTON
+
+    Background:
+        #CD202C
+
+    Text:
+        #FFFFFF
+
+    Pressed:
+        darker variant of #CD202C
+
+    Disabled:
+        #2A2A2A
+
+    Disabled text:
+        #A3A3A3
+
+
+SECONDARY BUTTON
+
+    Background:
+        transparent
+
+    Border:
+        #2A2A2A
+
+    Text:
+        #FFFFFF
+
+
+TERTIARY BUTTON
+
+    Background:
+        transparent
+
+    Text:
+        #CD202C
+
+
+============================================================
+14. INPUT FIELDS
+============================================================
+
+DEFAULT
+
+    Background:
+        #181818
+
+    Border:
+        #2A2A2A
+
+    Text:
+        #FFFFFF
+
+    Placeholder:
+        #A3A3A3
+
+
+FOCUSED
+
+    Border:
+        #CD202C
+
+
+ERROR
+
+    Border:
+        #EF4444
+
+
+SUCCESS
+
+    Border:
+        #22C55E
+
+
+============================================================
+15. CARDS
+============================================================
+
+STANDARD CARD
+
+    Background:
+        #181818
+
+    Border:
+        #2A2A2A
+
+
+ELEVATED CARD
+
+    Background:
+        #222222
+
+
+IMPORTANT CARD
+
+    Background:
+        #181818
+
+    Accent:
+        #CD202C
+
+
+Example:
+
+    ┌───────────────────────────────┐
+    │ |                             │
+    │ |  DPCO                       │
+    │ |  Assignment 2               │
+    │ |  Due tomorrow               │
+    │                               │
+    └───────────────────────────────┘
+
+The left accent indicator:
+
+    #CD202C
+
+
+============================================================
+16. ICON COLORS
+============================================================
+
+PRIMARY ICON
+
+    #FFFFFF
+
+
+SECONDARY ICON
+
+    #A3A3A3
+
+
+ACTIVE ICON
+
+    #CD202C
+
+
+SUCCESS ICON
+
+    #22C55E
+
+
+WARNING ICON
+
+    #F59E0B
+
+
+ERROR ICON
+
+    #EF4444
+
+
+INFO ICON
+
+    #3B82F6
+
+
+============================================================
+17. NAVIGATION COLORS
+============================================================
+
+BOTTOM NAVIGATION BACKGROUND
+
+    #0D0D0D
+
+
+INACTIVE
+
+    Icon:
+        #A3A3A3
+
+    Label:
+        #A3A3A3
+
+
+ACTIVE
+
+    Icon:
+        #CD202C
+
+    Label:
+        #FFFFFF
+
+
+Selected indicator:
+
+    #CD202C
+
+
+============================================================
+18. MODAL / BOTTOM SHEET
+============================================================
+
+BACKDROP
+
+    Near Black with opacity
+
+
+SHEET
+
+    #222222
+
+
+TEXT
+
+    #FFFFFF
+
+
+SECONDARY TEXT
+
+    #A3A3A3
+
+
+PRIMARY ACTION
+
+    #CD202C
+
+
+============================================================
+19. NOTIFICATION COLORS
+============================================================
+
+NORMAL
+
+    #3B82F6
+
+
+UPCOMING
+
+    #F59E0B
+
+
+URGENT
+
+    #CD202C
+
+
+CRITICAL
+
+    #EF4444
+
+
+COMPLETED
+
+    #22C55E
+
+
+Notification cards should remain primarily neutral/dark with
+semantic color used as an indicator rather than filling the
+whole notification.
+
+
+============================================================
+20. DOCUMENT IMPORT COLORS
+============================================================
+
+PROCESSING
+
+    #3B82F6
+
+
+SUCCESSFULLY EXTRACTED
+
+    #22C55E
+
+
+NEEDS REVIEW
+
+    #F59E0B
+
+
+EXTRACTION ERROR
+
+    #EF4444
+
+
+CONFIRMED
+
+    #CD202C
+
+
+This makes document-processing states immediately recognizable.
+
+
+============================================================
+21. CHARTS & ANALYTICS
+============================================================
+
+PRIMARY DATA:
+
+    #CD202C
+
+
+SECONDARY DATA:
+
+    #FFFFF0
+
+
+NEUTRAL DATA:
+
+    #A3A3A3
+
+
+SUCCESS:
+
+    #22C55E
+
+
+WARNING:
+
+    #F59E0B
+
+
+ERROR:
+
+    #EF4444
+
+
+INFO:
+
+    #3B82F6
+
+
+Charts should use a restrained number of colors.
+
+Do NOT turn the dashboard into a rainbow.
+
+
+============================================================
+22. ACCESSIBILITY RULE
+============================================================
+
+Color must never be the only way to communicate information.
+
+Example:
+
+    WRONG:
+
+    Red = urgent
+
+
+    BETTER:
+
+    [!] DPCO Assignment
+    Due Today
+
+
+The color reinforces the meaning; the text/icon provides the
+meaning.
+
+
+============================================================
+23. COLOR OPACITY GUIDELINES
+============================================================
+
+For overlays and subtle accents, use opacity rather than
+introducing unnecessary new colors.
+
+Suggested:
+
+    Primary tint:
+        #CD202C at 10–15%
+
+    Primary active surface:
+        #CD202C at 15–20%
+
+    White overlay:
+        #FFFFFF at 5–10%
+
+    Black overlay:
+        #000000 at 20–50%
+
+
+Opacity values may be adjusted during implementation based on
+actual device rendering and accessibility testing.
+
+
+============================================================
+24. DESIGN TOKEN RULE
+============================================================
+
+Components MUST reference semantic tokens.
+
+DO NOT write:
+
+    backgroundColor: "#CD202C"
+
+
+inside every component.
+
+Prefer:
+
+    backgroundColor:
+        colors.primary
+
+
+Therefore the palette can be changed globally without rewriting
+the component system.
+
+
+============================================================
+25. RECOMMENDED TOKEN STRUCTURE
+============================================================
+
+colors = {
+
+    primary: "#CD202C",
+
+    background: "#0D0D0D",
+
+    surface: "#181818",
+
+    surfaceElevated: "#222222",
+
+    textPrimary: "#FFFFFF",
+
+    textSecondary: "#A3A3A3",
+
+    accent: "#FFFFF0",
+
+    border: "#2A2A2A",
+
+    success: "#22C55E",
+
+    warning: "#F59E0B",
+
+    error: "#EF4444",
+
+    info: "#3B82F6"
+
+}
+
+
+============================================================
+26. BRAND COLOR RATIO
+============================================================
+
+Recommended visual balance:
+
+    Near Black:
+        ~65–75%
+
+    Surface / Elevated Surfaces:
+        ~15–25%
+
+    White / Warm Ivory:
+        ~5–10%
+
+    Flame Scarlet:
+        ~3–8%
+
+    Semantic colors:
+        Only when required
+
+
+The application should feel predominantly dark and controlled.
+
+Flame Scarlet should create emphasis rather than visual noise.
+
+
+============================================================
+27. VISUAL IDENTITY
+============================================================
+
+CORE COMBINATION:
+
+    #CD202C
+    +
+    #0D0D0D
+    +
+    #FFFFF0
+
+MEANING:
+
+    #CD202C
+        Action / Energy / Importance
+
+    #0D0D0D
+        Focus / Depth / Background
+
+    #FFFFF0
+        Warmth / Premium Accent / Distinction
+
+
+SECONDARY SUPPORT:
+
+    #FFFFFF
+        Clarity
+
+    #A3A3A3
+        Hierarchy
+
+    #22C55E
+        Completion
+
+    #F59E0B
+        Attention
+
+    #EF4444
+        Criticality
+
+    #3B82F6
+        Information
+
+
+============================================================
+28. FINAL COLOR RULE
+============================================================
+
+Academic Control should feel:
+
+    DARK
+    CLEAN
+    FOCUSED
+    HIGH-CONTRAST
+    SERIOUS
+    FAST
+
+The Flame Scarlet should feel like an ACTION COLOR,
+not the entire application's background.
+
+Primary visual identity:
+
+    FLAME SCARLET
+        +
+    NEAR BLACK
+        +
+    WARM IVORY
+
+Supporting system:
+
+    WHITE
+    GRAY
+    GREEN
+    AMBER
+    RED
+    BLUE
+
+
+============================================================
+END OF COLOR SPECIFICATION
+============================================================

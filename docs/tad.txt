@@ -1,0 +1,1716 @@
+============================================================
+ACADEMIC CONTROL
+TECHNICAL ARCHITECTURE DOCUMENT
+============================================================
+
+VERSION: 1.0
+STATUS: Initial Architecture
+PRODUCT: Academic Control
+PLATFORM: Mobile
+PRIMARY TARGET: Android
+SECONDARY TARGET: iOS
+ARCHITECTURAL PRINCIPLE: LOCAL-FIRST + DATA-DRIVEN
+============================================================
+
+
+1. ARCHITECTURAL OBJECTIVE
+============================================================
+
+Academic Control is a mobile-first academic execution and
+tracking system.
+
+The architecture must allow the system to work with different:
+
+- Colleges
+- Universities
+- Academic calendars
+- Departments
+- Programmes
+- Sections
+- Semesters
+- Subject structures
+- Assessment structures
+- Academic workflows
+
+without modifying application source code.
+
+The application code provides generic capabilities.
+
+The academic data provides the actual semester-specific behavior.
+
+
+============================================================
+2. CORE ARCHITECTURAL PRINCIPLES
+============================================================
+
+PRINCIPLE 1 — ZERO COLLEGE-SPECIFIC HARD CODING
+
+Do NOT hardcode:
+
+- RIT
+- Anna University
+- CSE
+- Semester 3
+- CAT 1/2/3
+- Cycle Test 1/2/3
+- Five units
+- Current semester dates
+- Current exam dates
+- Assignment deadlines
+- Internal-mark formulas
+- Lab experiment counts
+- Any academic calendar date
+
+
+------------------------------------------------------------
+
+PRINCIPLE 2 — DATA DRIVES BEHAVIOR
+
+Example:
+
+Instead of:
+
+    if examType == "CAT 1"
+
+the system should work with:
+
+    ExamType
+        id
+        name
+        category
+        applicableSubjectType
+
+Therefore CAT-1 exists because it is semester data/configuration,
+not because the mobile application knows that CAT-1 exists.
+
+
+------------------------------------------------------------
+
+PRINCIPLE 3 — USER REMAINS THE SOURCE OF TRUTH
+
+Imported information must never silently overwrite manually
+confirmed information.
+
+Recommended precedence:
+
+    User-confirmed data
+            >
+    Imported and confirmed data
+            >
+    Parsed but unconfirmed data
+
+
+------------------------------------------------------------
+
+PRINCIPLE 4 — LOCAL FIRST
+
+The application must remain usable when temporarily offline.
+
+Writes should primarily happen locally.
+
+Synchronization happens when connectivity becomes available.
+
+
+------------------------------------------------------------
+
+PRINCIPLE 5 — LEARNING AND TASKS ARE SEPARATE
+
+Learning progress is:
+
+    MANUAL
+
+Task progress is:
+
+    AUTOMATIC
+
+The system must never merge these two metrics.
+
+
+------------------------------------------------------------
+
+PRINCIPLE 6 — GENERIC DOMAIN MODEL
+
+The application should not be written around screens first.
+
+The underlying domain model must support:
+
+    Semester
+      → Subject
+        → Academic Work
+          → Task
+
+
+============================================================
+3. HIGH-LEVEL SYSTEM ARCHITECTURE
+============================================================
+
+                    ┌──────────────────────┐
+                    │      MOBILE APP      │
+                    │   React Native       │
+                    │      Expo             │
+                    │     TypeScript        │
+                    └──────────┬───────────┘
+                               │
+                 ┌─────────────┼─────────────┐
+                 │             │             │
+                 ▼             ▼             ▼
+           Local Database   Auth Client   File Upload
+              SQLite                         │
+                 │                           │
+                 └────────────┬──────────────┘
+                              │
+                              ▼
+                    ┌───────────────────┐
+                    │     API SERVER    │
+                    │     REST/JSON     │
+                    └─────────┬─────────┘
+                              │
+              ┌───────────────┼────────────────┐
+              │               │                │
+              ▼               ▼                ▼
+       Academic Service   Task Service   Calendar Service
+              │               │                │
+              └───────────────┼────────────────┘
+                              │
+                              ▼
+                    ┌───────────────────┐
+                    │   PostgreSQL DB   │
+                    └───────────────────┘
+
+                              │
+              ┌───────────────┼─────────────────┐
+              │               │                 │
+              ▼               ▼                 ▼
+        Object Storage   Document AI       Google Calendar
+                              │
+                              ▼
+                    Document Processing
+                       / Extraction
+
+
+============================================================
+4. RECOMMENDED TECHNOLOGY STACK
+============================================================
+
+MOBILE
+
+    React Native
+    Expo
+    TypeScript
+
+Reason:
+
+- Cross-platform
+- Strong ecosystem
+- Fast iteration
+- Native API access
+- Suitable for Android-first + iOS later
+
+
+------------------------------------------------------------
+STATE MANAGEMENT
+
+Recommended:
+
+    Zustand
+
+Responsibilities:
+
+- Current semester
+- UI state
+- Filters
+- Temporary import state
+- User preferences
+
+Do NOT use global state as the primary database.
+
+Persistent domain data belongs in SQLite.
+
+
+------------------------------------------------------------
+LOCAL DATABASE
+
+Recommended:
+
+    SQLite
+
+Possible implementation:
+
+    expo-sqlite
+
+
+Why:
+
+- Offline support
+- Relational structure
+- Strong fit for academic entities
+- Transaction support
+- Easy local-first architecture
+
+
+------------------------------------------------------------
+REMOTE DATABASE
+
+Recommended:
+
+    PostgreSQL
+
+Hosted through:
+
+    Supabase
+
+Recommended services:
+
+- PostgreSQL
+- Authentication
+- Storage
+- Row Level Security
+- Realtime where useful
+
+
+------------------------------------------------------------
+BACKEND
+
+Recommended:
+
+    FastAPI
+    Python
+
+Reason:
+
+The application needs document processing, extraction,
+validation and AI/ML-related processing.
+
+Python is a strong fit for those backend workloads.
+
+
+------------------------------------------------------------
+DOCUMENT PROCESSING
+
+Pipeline may use:
+
+    PDF parser
+    Image preprocessing
+    OCR / Vision model
+    Structured extraction
+    Validation
+    Normalization
+
+
+AI MODEL
+
+The primary AI provider will be the Gemini API.
+Gemini's multimodal capabilities (processing both images and PDFs directly) make it the ideal engine for academic document extraction and smart suggestions.
+
+While Gemini is the primary engine, the system should still maintain a clean abstraction:
+
+    DocumentAIProvider
+
+This ensures the backend architecture remains modular, with the Gemini API serving as the primary implementation. The Gemini API Key must be securely stored in the backend environment variables.
+
+
+------------------------------------------------------------
+AUTHENTICATION
+
+Recommended:
+
+    Supabase Auth
+
+Possible providers:
+
+- Google
+- Email/password
+- Magic link
+
+The exact supported providers can be decided during implementation.
+
+
+------------------------------------------------------------
+FILE STORAGE
+
+Recommended:
+
+    Supabase Storage
+
+Used for:
+
+- Academic calendars
+- Examination timetables
+- History attachments
+- Assignment attachments
+- Future supporting documents
+
+
+------------------------------------------------------------
+GOOGLE CALENDAR
+
+Use:
+
+    Google Calendar API
+    OAuth 2.0
+
+Users explicitly authorize calendar access.
+
+The app should never store the user's Google password.
+
+
+============================================================
+5. APPLICATION LAYERS
+============================================================
+
+The application should use clear separation of concerns.
+
+MOBILE:
+
+    Presentation Layer
+        ↓
+    Application Layer
+        ↓
+    Domain Layer
+        ↓
+    Repository Layer
+        ↓
+    Local Database / API
+
+
+SERVER:
+
+    API Layer
+        ↓
+    Application Services
+        ↓
+    Domain Logic
+        ↓
+    Repository Layer
+        ↓
+    PostgreSQL / Storage
+
+
+DOCUMENT:
+
+    Upload
+      ↓
+    Processing Job
+      ↓
+    Extraction
+      ↓
+    Normalization
+      ↓
+    Validation
+      ↓
+    User Review
+      ↓
+    Confirmed Academic Data
+
+
+============================================================
+6. DOMAIN MODEL
+============================================================
+
+USER
+
+    id
+    name
+    email
+    createdAt
+    updatedAt
+
+
+SEMESTER
+
+    id
+    userId
+    academicYear
+    semesterNumber
+    yearOfStudy
+    department
+    programme
+    section
+    startDate
+    endDate
+    status
+    createdAt
+    updatedAt
+
+
+SEMESTER_CONFIGURATION
+
+    id
+    semesterId
+    configurationJson
+
+
+This stores configurable academic behavior rather than
+hardcoding behavior into source code.
+
+
+------------------------------------------------------------
+
+ACADEMIC_DOCUMENT
+
+    id
+    semesterId
+    documentType
+    fileUrl
+    uploadedAt
+    processingStatus
+    sourceHash
+
+
+DOCUMENT_IMPORT
+
+    id
+    documentId
+    detectedData
+    confidence
+    status
+
+Possible status:
+
+    processing
+    needs_review
+    confirmed
+    rejected
+
+
+------------------------------------------------------------
+
+ACADEMIC_EVENT
+
+    id
+    semesterId
+    title
+    category
+    startAt
+    endAt
+    allDay
+    source
+    sourceDocumentId
+    confirmationStatus
+    googleCalendarEventId
+
+
+------------------------------------------------------------
+
+SUBJECT
+
+    id
+    semesterId
+    name
+    code
+    credits
+    type
+    position
+
+
+TYPE:
+
+    theory
+    laboratory
+
+
+------------------------------------------------------------
+
+CHAPTER
+
+    id
+    subjectId
+    name
+    description
+    order
+    learningProgress
+    confidence
+
+
+------------------------------------------------------------
+
+ASSIGNMENT
+
+    id
+    subjectId
+    chapterId
+    title
+    dueDate
+    status
+    mark
+    maxMark
+    description
+
+
+STATUS ENUM:
+
+    NOT_FINISHED
+    COMPLETED
+    SUBMITTED_ON_HAND
+    SUBMITTED_ON_MOODLE
+    GRADED
+
+
+------------------------------------------------------------
+
+LAB_EXPERIMENT
+
+    id
+    subjectId
+    experimentNumber
+    title
+    recordStatus
+    observationStatus
+    recordSubmitted
+    observationSubmitted
+
+
+------------------------------------------------------------
+
+EXAM_TYPE
+
+    id
+    semesterId
+    name
+    applicableSubjectType
+    category
+
+
+Examples may be entered through semester configuration:
+
+    CAT-I
+    CAT-II
+    CAT-III
+    Cycle Test-I
+    Cycle Test-II
+    Cycle Test-III
+    Theory Examination
+    Practical Examination
+
+
+IMPORTANT:
+
+These examples are DATA.
+
+They are NOT hardcoded application assumptions.
+
+
+------------------------------------------------------------
+
+EXAM
+
+    id
+    subjectId
+    examTypeId
+    date
+    startTime
+    endTime
+    marksObtained
+    maxMarks
+
+
+For semester examinations:
+
+    marks tracking may be disabled/configured off.
+
+
+------------------------------------------------------------
+
+TASK
+
+    id
+    subjectId
+    sourceType
+    sourceId
+    title
+    description
+    dueDate
+    status
+    priority
+    recurrence
+    completedAt
+
+
+Possible source types:
+
+    assignment
+    record
+    observation
+    experiment
+    exam
+    academic_event
+    custom
+
+
+------------------------------------------------------------
+
+HISTORY_ENTRY
+
+    id
+    userId
+    semesterId
+    subjectId
+    date
+    title
+    description
+    category
+
+
+------------------------------------------------------------
+
+HISTORY_ATTACHMENT
+
+    id
+    historyEntryId
+    fileUrl
+    fileType
+
+
+------------------------------------------------------------
+
+INTERNAL_MARK_RULE
+
+    id
+    semesterId
+    name
+    configurationJson
+    enabled
+
+
+The calculation engine consumes this configuration.
+
+It must not contain college-specific formulas.
+
+
+------------------------------------------------------------
+
+REMINDER_RULE
+
+    id
+    userId
+    targetType
+    configurationJson
+    enabled
+
+
+------------------------------------------------------------
+
+CALENDAR_CONNECTION
+
+    id
+    userId
+    provider
+    externalCalendarId
+    accessState
+
+
+------------------------------------------------------------
+
+SYNC_METADATA
+
+    entityType
+    entityId
+    localUpdatedAt
+    remoteUpdatedAt
+    syncVersion
+    syncStatus
+
+
+============================================================
+7. TASK ARCHITECTURE
+============================================================
+
+A key design decision:
+
+Assignments, records, observations and other academic work can
+generate tasks.
+
+The user sees:
+
+    Subject
+       ↓
+    Academic Work
+       ↓
+    Next Task
+
+
+Example:
+
+    DPCO
+       Assignment 1
+       Assignment 2
+       Assignment 3
+
+    Physics Laboratory
+       Experiment 1
+          Record
+          Observation
+       Experiment 2
+          Record
+          Observation
+
+
+------------------------------------------------------------
+
+TASK STATUS MUST BE DERIVED FROM DOMAIN STATE WHERE POSSIBLE.
+
+For example:
+
+Assignment:
+
+    NOT_FINISHED
+    COMPLETED
+    SUBMITTED_ON_HAND
+    SUBMITTED_ON_MOODLE
+    GRADED
+
+
+The task engine maps domain states into:
+
+    pending
+    active
+    complete
+
+
+This keeps task analytics consistent.
+
+
+============================================================
+8. PROGRESS ARCHITECTURE
+============================================================
+
+There are TWO independent progress systems.
+
+
+------------------------------------------------------------
+8.1 TASK PROGRESS
+------------------------------------------------------------
+
+AUTOMATIC.
+
+Example:
+
+    Total academic tasks: 20
+    Completed: 15
+    Active/Pending: 5
+
+    Task Progress = 75%
+
+
+------------------------------------------------------------
+8.2 LEARNING PROGRESS
+------------------------------------------------------------
+
+MANUAL.
+
+Example:
+
+    Subject:
+    Discrete Mathematics
+
+    Unit I: 100%
+    Unit II: 70%
+    Unit III: 45%
+
+Subject learning progress can be derived from the chapter values
+ONLY if the user chooses automatic aggregation.
+
+Otherwise the user may configure the aggregation behavior.
+
+
+------------------------------------------------------------
+8.3 CONFIDENCE
+
+Manual:
+
+    0–10
+
+At:
+
+    Subject level
+    Chapter level
+
+Never automatically overwritten.
+
+
+============================================================
+9. INTERNAL MARK ENGINE
+============================================================
+
+The calculation engine should use a generic rule evaluator.
+
+INPUT:
+
+    CAT marks
+    Assignment marks
+    Configuration
+
+PROCESS:
+
+    Parse configured formula/rules
+           ↓
+    Validate inputs
+           ↓
+    Calculate
+           ↓
+    Return result
+
+
+Example configuration concept:
+
+    {
+        "components": [...],
+        "weights": [...],
+        "normalization": {...}
+    }
+
+
+The actual formula is supplied by user/configuration.
+
+
+============================================================
+10. DOCUMENT PROCESSING PIPELINE
+============================================================
+
+                 USER UPLOADS FILE
+                         │
+                         ▼
+                File Type Detection
+                         │
+                         ▼
+                Document Preprocessing
+                         │
+                         ▼
+                Gemini API Multimodal Extraction
+                         │
+                         ▼
+                 Raw Extraction JSON
+                         │
+                         ▼
+                  Normalization Layer
+                         │
+                         ▼
+                  Domain Classification
+                         │
+                         ├── Academic Event
+                         ├── Subject
+                         ├── Exam
+                         ├── Assignment Deadline
+                         └── Other
+                         │
+                         ▼
+                  Validation Engine
+                         │
+                         ▼
+                  REVIEW SCREEN
+                         │
+                         ▼
+                USER CONFIRMATION
+                         │
+                         ▼
+                 DATABASE COMMIT
+
+
+============================================================
+11. DOCUMENT EXTRACTION CONTRACT
+============================================================
+
+The parser should return structured information.
+
+Example:
+
+{
+  "documentType": "academic_calendar",
+  "events": [
+    {
+      "title": "...",
+      "date": "...",
+      "category": "...",
+      "confidence": 0.94
+    }
+  ]
+}
+
+
+For an examination timetable:
+
+{
+  "documentType": "exam_timetable",
+  "entries": [
+    {
+      "programme": "...",
+      "section": "...",
+      "courseCode": "...",
+      "courseTitle": "...",
+      "examDate": "...",
+      "session": "...",
+      "confidence": 0.98
+    }
+  ]
+}
+
+
+The UI should expose low-confidence items for confirmation.
+
+
+============================================================
+12. PROGRAMME / DEPARTMENT / SECTION FILTERING
+============================================================
+
+Imported examination documents can contain multiple programmes.
+
+Filtering pipeline:
+
+    Raw timetable
+         ↓
+    Detect all programme blocks
+         ↓
+    Match user profile
+         ↓
+    Filter relevant block
+         ↓
+    Match section where available
+         ↓
+    Extract applicable exams
+         ↓
+    User review
+
+
+The user's academic profile therefore becomes part of the
+document-processing context.
+
+Example:
+
+    Department:
+        Computer Science and Engineering
+
+    Programme:
+        B.E. CSE
+
+    Section:
+        F
+
+
+The parser does not assume these values.
+
+They come from the user.
+
+
+============================================================
+13. LOCAL-FIRST SYNC
+============================================================
+
+WRITE OPERATION
+
+    User changes data
+          ↓
+    Save SQLite
+          ↓
+    UI updates immediately
+          ↓
+    Add sync operation to queue
+          ↓
+    Network available?
+          │
+          ├── NO → keep queue
+          │
+          └── YES
+                ↓
+             API Sync
+                ↓
+             Server DB
+
+
+------------------------------------------------------------
+
+SYNC STRATEGY
+
+Every mutable entity should have:
+
+    updatedAt
+    version
+    syncState
+
+
+Possible sync states:
+
+    synced
+    pending_upload
+    pending_download
+    conflict
+
+
+------------------------------------------------------------
+
+CONFLICT POLICY
+
+For MVP:
+
+    Last-write-wins
+
+For important future entities:
+
+    Conflict resolution UI
+
+
+============================================================
+14. API ARCHITECTURE
+============================================================
+
+BASE:
+
+    /api/v1
+
+
+AUTH:
+
+    POST /auth/session
+
+
+SEMESTERS:
+
+    GET    /semesters
+    POST   /semesters
+    GET    /semesters/{id}
+    PATCH  /semesters/{id}
+    DELETE /semesters/{id}
+
+
+DOCUMENTS:
+
+    POST   /semesters/{id}/documents
+    GET    /documents/{id}
+    POST   /documents/{id}/process
+    GET    /documents/{id}/import
+
+
+SUBJECTS:
+
+    GET    /semesters/{id}/subjects
+    POST   /semesters/{id}/subjects
+    PATCH  /subjects/{id}
+    DELETE /subjects/{id}
+
+
+CHAPTERS:
+
+    POST   /subjects/{id}/chapters
+    PATCH  /chapters/{id}
+
+
+ASSIGNMENTS:
+
+    GET    /subjects/{id}/assignments
+    POST   /subjects/{id}/assignments
+    PATCH  /assignments/{id}
+
+
+LAB:
+
+    GET    /subjects/{id}/experiments
+    POST   /subjects/{id}/experiments
+    PATCH  /experiments/{id}
+
+
+EXAMS:
+
+    GET    /subjects/{id}/exams
+    POST   /subjects/{id}/exams
+    PATCH  /exams/{id}
+
+
+TASKS:
+
+    GET    /tasks
+    POST   /tasks
+    PATCH  /tasks/{id}
+
+
+HISTORY:
+
+    GET    /history
+    POST   /history
+    PATCH  /history/{id}
+
+
+CALENDAR:
+
+    GET    /academic-events
+    PATCH  /academic-events/{id}
+
+
+GOOGLE:
+
+    GET    /integrations/google
+    POST   /integrations/google/connect
+    POST   /integrations/google/sync
+    DELETE /integrations/google
+
+
+============================================================
+15. AUTHORIZATION
+============================================================
+
+Every server-side record must belong to a user.
+
+Recommended:
+
+    user_id
+
+must be present on user-owned top-level entities.
+
+Supabase Row Level Security should enforce:
+
+    User A cannot access User B's data.
+
+
+Storage paths should similarly be scoped:
+
+    /user/{userId}/...
+
+
+============================================================
+16. SECURITY
+============================================================
+
+Sensitive information includes:
+
+- User account information
+- Academic history
+- Uploaded documents
+- Google Calendar authorization
+- Attachments
+
+Security requirements:
+
+- HTTPS only
+- Encrypted data in transit
+- Secure token storage
+- OAuth token protection
+- Database access policies
+- Server-side validation
+- File type validation
+- File size limits
+- Signed storage URLs
+- No API secrets in mobile app
+- Gemini API keys MUST be stored securely only on the backend (e.g., via environment variables or secret manager) and never exposed to the client.
+
+
+============================================================
+17. GOOGLE CALENDAR ARCHITECTURE
+============================================================
+
+FLOW:
+
+    User selects:
+        Connect Google Calendar
+
+              ↓
+
+        OAuth Consent
+
+              ↓
+
+       Authorization granted
+
+              ↓
+
+      Calendar Connection Saved
+
+              ↓
+
+     Confirmed academic events
+
+              ↓
+
+      Calendar Event Generator
+
+              ↓
+
+       Google Calendar API
+
+
+------------------------------------------------------------
+
+OFFICIAL EVENTS:
+
+Can be pushed according to user settings.
+
+PERSONAL TASKS:
+
+Must be explicitly selected or enabled by the user.
+
+This prevents automatic calendar pollution.
+
+
+------------------------------------------------------------
+
+EVENT METADATA
+
+Every synced event should store:
+
+    localEventId
+    googleEventId
+
+
+Therefore:
+
+    Update local event
+         ↓
+    Update Google event
+
+
+rather than repeatedly creating duplicates.
+
+
+============================================================
+18. REMINDER ENGINE
+============================================================
+
+Reminder generation must be data-driven.
+
+INPUTS:
+
+- Task due date
+- Academic event
+- Exam date
+- User reminder settings
+- Task state
+- Recurrence
+- User preferences
+
+
+ENGINE:
+
+    Scheduler
+       ↓
+    Find upcoming entities
+       ↓
+    Evaluate reminder rules
+       ↓
+    Check task state
+       ↓
+    Generate notification
+       ↓
+    Store notification state
+
+
+No date or reminder is hardcoded.
+
+
+============================================================
+19. SMART SUGGESTION ENGINE
+============================================================
+
+The system does not teach subjects.
+
+It suggests actions using existing data.
+
+INPUTS:
+
+    Upcoming deadlines
+    Upcoming exams
+    Learning progress
+    Confidence
+    Pending tasks
+    Assignment state
+    Record state
+    Observation state
+    User priorities
+
+
+OUTPUT:
+
+    Suggested Action
+
+
+Example:
+
+    "Discrete Mathematics — Unit II has low confidence
+     and an upcoming CAT."
+
+The engine should explain WHY a suggestion was generated.
+
+Example:
+
+    Reason:
+    "Confidence 4/10 + 40% learning progress + CAT approaching."
+
+
+============================================================
+20. NOTIFICATION ESCALATION
+============================================================
+
+Example rule configuration:
+
+    reminderRules:
+        - X days before
+        - X hours before
+        - repeat interval
+        - escalation enabled
+
+
+Notifications should be state-aware.
+
+Example:
+
+    3 days before:
+    "Assignment due in 3 days."
+
+    1 day before:
+    "Assignment due tomorrow."
+
+    Due day:
+    "Assignment due today."
+
+
+If already submitted:
+
+    STOP reminder.
+
+
+============================================================
+21. OBSERVABILITY
+============================================================
+
+Backend should have:
+
+- Error logging
+- Request logging
+- Document processing logs
+- Import failure logs
+- Sync error logs
+- Calendar integration logs
+
+
+Analytics should avoid collecting unnecessary personal data.
+
+
+============================================================
+22. TESTING STRATEGY
+============================================================
+
+UNIT TESTS
+
+- Progress calculations
+- Internal mark calculations
+- Status transitions
+- Reminder rules
+- Filtering
+- Date handling
+
+
+INTEGRATION TESTS
+
+- Authentication
+- Database
+- Sync
+- Google Calendar
+- File upload
+
+
+DOCUMENT TESTS
+
+Maintain a test corpus of:
+
+- Academic calendars
+- Exam timetables
+- Different layouts
+- Different colleges
+- Scanned PDFs
+- Image calendars
+
+
+IMPORTANT:
+
+Test documents should validate extraction behavior.
+
+They should NOT result in college-specific code.
+
+
+============================================================
+23. FAILURE CASES
+============================================================
+
+DOCUMENT PARSING FAILURE
+
+    Show:
+    "We could not confidently extract this information."
+
+USER CORRECTS IT.
+
+
+DUPLICATE DOCUMENT
+
+    Detect using:
+    file hash / metadata / semantic comparison
+
+
+NETWORK FAILURE
+
+    Continue locally.
+
+
+CALENDAR API FAILURE
+
+    Keep local event.
+    Mark sync as pending.
+
+
+SYNC CONFLICT
+
+    Preserve both versions where necessary
+    and request user resolution.
+
+
+AI EXTRACTION ERROR
+
+    Fall back to manual entry.
+
+
+============================================================
+24. OFFLINE CAPABILITIES
+============================================================
+
+The user should be able to perform offline:
+
+- View subjects
+- View chapters
+- Update learning progress
+- Update confidence
+- Update assignment status
+- Update records
+- Update observations
+- Add history
+- Create tasks
+- View calendar
+- Enter marks
+
+
+Potentially network-dependent:
+
+- Document processing
+- Cloud backup
+- Google Calendar sync
+- AI suggestions if server-generated
+
+
+============================================================
+25. PROJECT STRUCTURE
+============================================================
+
+Recommended mobile structure:
+
+src/
+
+    app/
+        navigation/
+        routes/
+
+    features/
+        dashboard/
+        semesters/
+        subjects/
+        chapters/
+        assignments/
+        laboratories/
+        exams/
+        tasks/
+        calendar/
+        history/
+        import/
+        settings/
+
+    components/
+        ui/
+        cards/
+        forms/
+        lists/
+
+    domain/
+        entities/
+        usecases/
+        validators/
+
+    data/
+        sqlite/
+        repositories/
+        api/
+        sync/
+
+    integrations/
+        googleCalendar/
+        notifications/
+
+    services/
+        reminders/
+        suggestions/
+
+    store/
+
+    utils/
+
+
+Backend:
+
+backend/
+
+    app/
+        api/
+        domain/
+        services/
+        repositories/
+        models/
+        schemas/
+        document_processing/
+        integrations/
+        workers/
+        security/
+
+    tests/
+
+
+============================================================
+26. DEPLOYMENT
+============================================================
+
+MOBILE:
+
+    Expo EAS
+
+ANDROID:
+
+    Google Play
+
+
+iOS:
+
+    App Store
+
+
+BACKEND:
+
+    FastAPI deployment
+
+
+DATABASE:
+
+    PostgreSQL
+
+
+STORAGE:
+
+    Object storage
+
+
+WORKERS:
+
+    Background document processing
+
+
+CI/CD:
+
+    GitHub Actions
+
+
+============================================================
+27. DEVELOPMENT PHASES
+============================================================
+
+PHASE 1 — FOUNDATION
+
+- React Native/Expo
+- Authentication
+- SQLite
+- Database schema
+- Navigation
+- Semester creation
+
+
+PHASE 2 — ACADEMIC CORE
+
+- Subjects
+- Chapters
+- Learning progress
+- Confidence
+- Assignments
+- Laboratory tracking
+
+
+PHASE 3 — TASK ENGINE
+
+- Tasks
+- Automatic task progress
+- Next-action logic
+- Recurring tasks
+
+
+PHASE 4 — CALENDAR IMPORT
+
+- PDF/image upload
+- Document processing
+- Academic event extraction
+- Review/confirmation
+
+
+PHASE 5 — EXAM IMPORT
+
+- Timetable extraction
+- Programme filtering
+- Section filtering
+- Exam creation
+
+
+PHASE 6 — MARKS
+
+- CAT marks
+- Assignment marks
+- Configurable internal calculator
+
+
+PHASE 7 — INTELLIGENCE
+
+- Smart reminders
+- Suggestions
+- Escalation
+
+
+PHASE 8 — GOOGLE CALENDAR
+
+- OAuth
+- Event push
+- Event mapping
+- Sync state
+
+
+PHASE 9 — CLOUD SYNC
+
+- Server sync
+- Conflict handling
+- Backup/restore
+
+
+============================================================
+28. ARCHITECTURAL NORTH STAR
+============================================================
+
+The application must behave as:
+
+    GENERIC ACADEMIC ENGINE
+
+and NOT:
+
+    COLLEGE-SPECIFIC APP
+
+
+The same binary should theoretically be able to accept:
+
+    College A calendar
+    +
+    College B calendar
+    +
+    College C timetable
+
+without source-code changes.
+
+Only the input data changes.
+
+
+============================================================
+END OF TECHNICAL ARCHITECTURE DOCUMENT
+============================================================

@@ -1,0 +1,577 @@
+================================================================================
+METRON: MASTER IMPLEMENTATION & EXECUTION PLAN (INCH-BY-INCH)
+================================================================================
+Brand: Metron ("Measure. Organize. Progress.")
+Core Identity: Personal Academic Command Center
+Architecture: Local-First, Offline-First, Zero College-Specific Hardcoding
+Tech Stack:
+  - Mobile: React Native (Expo SDK 51+), TypeScript, Zustand, expo-sqlite
+  - Backend: Python 3.13, FastAPI (/api/v1), Pydantic v2, uv package manager
+  - AI Engine: Gemini API (Backend-Isolated Multimodal Vision via google-genai)
+  - Cloud / DB: Supabase (PostgreSQL with Row Level Security, Auth, Storage)
+  - External: Google Calendar API (OAuth 2.0)
+Document Version: 1.0.0
+Last Updated: 2026-10-03
+Status Tracking Legend:
+  [X] COMPLETED    : Fully implemented, tested, and verified on disk.
+  [~] IN PROGRESS  : Partially built / currently active in development.
+  [ ] PENDING      : Detailed specification ready, awaiting execution phase.
+
+================================================================================
+TABLE OF CONTENTS
+================================================================================
+1. ARCHITECTURAL PRINCIPLES & GOVERNANCE RULES
+2. GLOBAL REPOSITORY & DIRECTORY LAYOUT
+3. PHASE 1: FOUNDATION, DESIGN SYSTEM & LOCAL STORAGE SCAFFOLD
+4. PHASE 2: ACADEMIC CORE (SEMESTERS, SUBJECTS & CHAPTER CONFIDENCE)
+5. PHASE 3: TASK & ACTION ENGINE (ASSIGNMENTS, LABS & AUTO ROLLUP)
+6. PHASE 4: DOCUMENT INTELLIGENCE & GEMINI MULTIMODAL EXTRACTION
+7. PHASE 5: EXAM TIMETABLE INGESTION & DYNAMIC FILTERING
+8. PHASE 6: CONFIGURABLE MARKS & INTERNAL CALCULATOR ENGINE
+9. PHASE 7: INTELLIGENCE ENGINE (REMINDERS & SMART STUDY REASONING)
+10. PHASE 8: GOOGLE CALENDAR BIDIRECTIONAL INTEGRATION
+11. PHASE 9: CLOUD SYNC, CONFLICT RESOLUTION & EAS PACKAGING
+12. SELF-VERIFICATION & ARTIFACT AUDIT MATRIX
+
+================================================================================
+1. ARCHITECTURAL PRINCIPLES & GOVERNANCE RULES
+================================================================================
+Rule 1: ZERO HARDCODING
+  - No college names, semester dates, grading formulas, or exam timetables are
+    hardcoded into the application codebase.
+  - The application provides the generic execution system; the user provides
+    their institution's data.
+
+Rule 2: LOCAL-FIRST RELIABILITY
+  - 100% of read and write interactions must succeed without network connectivity.
+  - Local SQLite is the single source of truth for the mobile client.
+  - Network is only required for:
+      (a) Document upload & Gemini multimodal processing
+      (b) Supabase PostgreSQL bidirectional cloud backup
+      (c) Google Calendar push sync
+
+Rule 3: DUAL-TRACK PROGRESS SEPARATION
+  - Task Progress (Automatic):
+      Derived deterministically from binary or multi-state status transitions
+      across assignments, lab observations, lab records, and action items.
+  - Learning Progress (Manual):
+      Controlled strictly by the student via sliders (0% to 100%) and confidence
+      ratings (1 to 10) per unit/chapter. Task completion NEVER overrides
+      understanding, and understanding NEVER fakes task completion.
+
+Rule 4: GEMINI API ISOLATION & SECURITY
+  - The Gemini API Key MUST NEVER be embedded in the mobile binary or exposed
+    over client network requests.
+  - The Gemini API is strictly invoked on the Python FastAPI backend via the
+    official `google-genai` SDK using server-side environment variables.
+
+================================================================================
+2. GLOBAL REPOSITORY & DIRECTORY LAYOUT
+================================================================================
+[X] Root Structure Established:
+    Metron/
+    ├── docs/                                  # Specifications & Master Plan
+    │   ├── brand.txt                          # Brand tone, personality, values
+    │   ├── color.txt                          # Color palette & hex tokens
+    │   ├── prd.txt                            # Product Requirements Document
+    │   ├── tad.txt                            # Technical Architecture Document
+    │   ├── uiux.txt                           # Screen-by-screen UX specifications
+    │   └── plan.txt                           # THIS MASTER EXECUTION PLAN
+    ├── backend/                               # Python 3.13 FastAPI Backend
+    │   ├── .python-version                    # Python 3.13 pin
+    │   ├── pyproject.toml                     # Dependencies managed by uv
+    │   ├── .env.example                       # Backend secrets template
+    │   ├── app/
+    │   │   ├── main.py                        # FastAPI entry point & CORS
+    │   │   ├── core/
+    │   │   │   ├── config.py                  # Pydantic BaseSettings
+    │   │   │   └── datetime_utils.py          # Python 3.13 timezone-aware UTC
+    │   │   ├── api/
+    │   │   │   ├── deps.py                    # User authentication dependency
+    │   │   │   └── v1/
+    │   │   │       ├── api.py                 # API v1 router aggregator
+    │   │   │       └── endpoints/             # REST endpoints (TAD Sec 14)
+    │   │   ├── document_processing/
+    │   │   │   └── gemini_provider.py         # Gemini Multimodal Vision Provider
+    │   │   ├── repositories/
+    │   │   │   └── in_memory_store.py         # Testable repository layer
+    │   │   └── schemas/                       # Pydantic v2 data contracts
+    │   └── tests/
+    │       └── test_api.py                    # Automated pytest suite
+    └── mobile/                                # React Native (Expo) Client
+        ├── App.tsx                            # Root entry & SQLite init
+        ├── package.json                       # Expo SDK 51+ dependencies
+        ├── tsconfig.json                      # TypeScript strict config
+        └── src/
+            ├── components/ui/                 # Atomic UI components & Theme
+            ├── store/                         # Zustand state store
+            ├── data/sqlite/                   # Local SQLite schema & database
+            ├── app/navigation/                # BottomTabs & Native Stack
+            └── features/                      # Feature modules
+
+================================================================================
+3. PHASE 1: FOUNDATION, DESIGN SYSTEM & LOCAL STORAGE SCAFFOLD
+================================================================================
+Goal: Set up the full-stack infrastructure, enforce dark-mode design tokens,
+      initialize local SQLite durable tables, and scaffold all REST endpoints.
+
+Backend Tasks:
+  [X] 1.1 Python 3.13 Environment Setup:
+      - Installed Python 3.13.15 via `uv`.
+      - Generated `backend/.python-version` pinned to 3.13.
+      - Generated `pyproject.toml` with `fastapi`, `uvicorn`, `pydantic-settings`,
+        `google-genai`, `supabase`, `python-multipart`, and `pytest`.
+  [X] 1.2 Configuration & Security:
+      - Implemented `app/core/config.py` with `Settings` class reading `.env`.
+      - Created `backend/.env.example` defining `GEMINI_API_KEY`, `SUPABASE_URL`,
+        `SUPABASE_KEY`, and `GOOGLE_CLIENT_ID`.
+      - Built `app/core/datetime_utils.py` for Python 3.13 timezone-aware UTC.
+  [X] 1.3 REST Endpoints Scaffold (TAD Section 14):
+      - Created `/api/v1` router aggregator in `app/api/v1/api.py`.
+      - Implemented health check endpoint `GET /health`.
+      - Implemented `POST /api/v1/auth/session` in `endpoints/auth.py`.
+      - Implemented full CRUD for `SEMESTERS`:
+          GET    /api/v1/semesters
+          POST   /api/v1/semesters
+          GET    /api/v1/semesters/{id}
+          PATCH  /api/v1/semesters/{id}
+          DELETE /api/v1/semesters/{id}
+      - Implemented `DOCUMENTS` ingestion & processing:
+          POST   /api/v1/semesters/{id}/documents
+          GET    /api/v1/documents/{id}
+          POST   /api/v1/documents/{id}/process
+          GET    /api/v1/documents/{id}/import
+          POST   /api/v1/documents/{id}/confirm
+      - Implemented `SUBJECTS` & `CHAPTERS`:
+          GET    /api/v1/semesters/{id}/subjects
+          POST   /api/v1/semesters/{id}/subjects
+          GET    /api/v1/subjects/{id}
+          PATCH  /api/v1/subjects/{id}
+          DELETE /api/v1/subjects/{id}
+          GET    /api/v1/subjects/{id}/chapters
+          POST   /api/v1/subjects/{id}/chapters
+          PATCH  /api/v1/chapters/{id}
+      - Implemented `ASSIGNMENTS`, `LAB`, `EXAMS`, `TASKS`, `HISTORY`, `CALENDAR`:
+          GET/POST/PATCH /api/v1/subjects/{id}/assignments
+          GET/POST/PATCH /api/v1/subjects/{id}/experiments
+          GET/POST/PATCH /api/v1/subjects/{id}/exams
+          GET/POST/PATCH/DELETE /api/v1/tasks
+          GET/POST/PATCH /api/v1/history
+          GET/POST/PATCH /api/v1/academic-events
+      - Implemented `GOOGLE` calendar integration endpoints:
+          GET    /api/v1/integrations/google
+          POST   /api/v1/integrations/google/connect
+          POST   /api/v1/integrations/google/sync
+          DELETE /api/v1/integrations/google
+  [X] 1.4 Automated Backend Testing:
+      - Wrote comprehensive unit and integration tests in `backend/tests/test_api.py`.
+      - Verified 100% test pass rate via `uv run python -m pytest` (4/4 tests passed).
+
+Mobile Tasks:
+  [X] 1.5 Expo Project Initialization:
+      - Initialized `mobile/` with TypeScript template.
+      - Installed dependencies: `@react-navigation/native`, `@react-navigation/bottom-tabs`,
+        `@react-navigation/native-stack`, `react-native-screens`, `react-native-safe-area-context`,
+        `expo-sqlite`, `zustand`, `expo-document-picker`, `expo-file-system`.
+  [X] 1.6 Design Tokens Implementation:
+      - Created `mobile/src/components/ui/theme.ts` adhering to `color.txt` & `brand.txt`:
+          * Primary: Flame Scarlet (`#CD202C`)
+          * Primary Hover/Active: Crimson Glow (`#E03A3E`)
+          * Deep Canvas: Near Black (`#0D0D0D`)
+          * Card Surface: Jet (`#181818`)
+          * Elevated Surface: Charcoal (`#222222`)
+          * Input Surface: Dark Slate (`#262626`)
+          * Border: Gunmetal (`#2C2C2C`)
+          * Text Primary: Pure White (`#FFFFFF`)
+          * Text Secondary: Muted Gray (`#A3A3A3`)
+          * Accent Snow: (`#FFFFF0`)
+  [X] 1.7 Atomic UI Components:
+      - `Button.tsx`: Primary, secondary, outline, ghost, danger with loading states.
+      - `Card.tsx`: Default Jet surface, elevated Charcoal, and Flame Scarlet accent border.
+      - `ProgressBar.tsx`: Clamped numeric indicator with custom heights and color fills.
+      - `Badge.tsx`: Semantic tag chips (primary, success, warning, error, info, neutral).
+      - `Header.tsx`: Flame brand mark ('M'), active semester label, and Quick Import button.
+  [X] 1.8 SQLite Local Persistence:
+      - Created `schema.ts` defining tables: `semesters`, `subjects`, `chapters`,
+        `assignments`, `experiments`, `exams`, `tasks`, `history`, `academic_events`,
+        and `sync_queue`.
+      - Built `database.ts` managing SQLite database connection and PRAGMA foreign keys.
+  [X] 1.9 Reactive State Store:
+      - Created `useAppStore.ts` via Zustand with SQLite queries, default seed data,
+        active semester management, and reactive data reloaders.
+  [X] 1.10 Navigation Architecture:
+      - Implemented Bottom Tab Navigator with 5 core tabs:
+          (1) Home (`DashboardScreen`)
+          (2) Subjects (`SubjectsListScreen`)
+          (3) Calendar (`AcademicCalendarScreen`)
+          (4) Tasks (`TasksScreen`)
+          (5) History (`HistoryScreen`)
+      - Implemented Native Stack Navigator wrapping modal transitions for:
+          * `SubjectDetailScreen`
+          * `DocumentImportScreen`
+  [X] 1.11 Mobile Verification:
+      - Validated TypeScript compilation with `npx tsc --noEmit` (0 errors).
+
+================================================================================
+4. PHASE 2: ACADEMIC CORE (SEMESTERS, SUBJECTS & CHAPTER CONFIDENCE)
+================================================================================
+Goal: Provide full academic management for university courses, syllabus units,
+      and manual learning tracking without college constraints.
+
+Tasks:
+  [X] 2.1 Semester Management UI:
+      - Display active semester in header and dashboard metrics.
+      - Store semester metadata (Academic Year, Semester Number, Programme, Section).
+  [X] 2.2 Semester Multi-Profile & Switcher:
+      - Implemented SemesterSwitcherModal.tsx accessible directly from top header.
+      - Support switching between multiple academic terms (Sem 1..8).
+      - Add new term with year, programme, department, and section.
+      - Term deletion and archiving support with local SQLite updates.
+  [X] 2.3 Subject Management:
+      - Subject List with Theory vs Laboratory tabs and Total Credits summary.
+      - Modal to create custom subjects with code, name, category, credits, faculty,
+        and color accent tokens (#CD202C, #3B82F6, #10B981, #F59E0B, #8B5CF6).
+      - Cascade deletion of subjects and associated unit coursework.
+  [X] 2.4 Subject Detail Screen:
+      - Full header displaying course code, category, credit weight, and faculty.
+      - Subject edit modal to update course metadata.
+      - Dual-track status banner (Manual Learning Progress vs Automatic Task Progress).
+      - Average confidence readout and units completed (100%) indicator.
+  [X] 2.5 Unit / Chapter Learning Stepper & Presets:
+      - Unit title and unit number management.
+      - Interactive stepper buttons (-10% / +10%) for manual learning progress (0-100%).
+      - Rapid progress presets (0%, 50%, 100%) with "✓ Mastered" badge when complete.
+  [X] 2.6 Confidence Rating System:
+      - 1-to-10 confidence rating chips with real-time subject average rollup.
+      - Dynamic visual alert styling (Flame Scarlet border and badge) when confidence < 5.
+  [X] 2.7 Syllabus Notes & Key Topics Checklist:
+      - Interactive key topics checklist with checkboxes and live topic completion count.
+      - Inline input to quickly append new theorems, concepts, and syllabus topics.
+      - Per-topic deletion support.
+      - Unit revision notes modal allowing students to store formulas, definitions,
+        and exam tips with local SQLite persistence.
+  [X] 2.8 Backend Academic Core Endpoints:
+      - Full CRUD for semesters, subjects, and units (GET, POST, PATCH, DELETE /chapters/{id}).
+      - Unit tests in test_academic_core_phase2 verifying dynamic metric rollups.
+
+================================================================================
+5. PHASE 3: TASK & ACTION ENGINE (ASSIGNMENTS, LABS & AUTO ROLLUP)
+================================================================================
+Goal: Operationalize academic execution with automated task rollup, state
+      machines, and zero manual calculation required from the student.
+
+Tasks:
+  [X] 3.1 Next Action Focus:
+      - Dedicated "Next Action" star/flag on task board.
+      - Hero card on Dashboard highlighting the single most urgent pending task.
+  [X] 3.2 Task State Machine & Filtering:
+      - Filter chips: "All Tasks", "Next Action", "Pending", "Completed".
+      - Instant checkbox toggle updating SQLite status.
+  [X] 3.3 Full Assignment Lifecycle & Grading Engine (TAD 7 / PRD 11):
+      - Data Model: `id`, `subject_id`, `chapter_id`, `title`, `description`,
+        `due_date`, `status`, `max_marks`, `obtained_marks`.
+      - Strict 5-stage lifecycle state machine:
+          1. NOT_FINISHED      ("Not Finished" - initial state)
+          2. COMPLETED         ("Completed" - solved by student, ready to turn in)
+          3. SUBMITTED_HAND    ("Submitted on Hand" - physical turn-in to instructor)
+          4. SUBMITTED_MOODLE  ("Submitted on Moodle" - LMS upload complete)
+          5. GRADED            ("Graded" - evaluated with marks recorded)
+      - Interactive Grading Flow:
+          When status advances to `GRADED`, trigger numeric modal prompt:
+          "Enter your marks: Obtained [___] / Maximum [___]" (e.g. 8.5 / 10).
+      - Chapter Connection:
+          Optionally associate each assignment with a specific unit/chapter
+          for granular unit-level workload tracking.
+      - Mobile UI:
+          Embedded Theory Subject tab in `SubjectDetailScreen.tsx` with
+          status advancement buttons, due date badges, and score displays.
+  [X] 3.4 Laboratory Dual-State Tracking System (TAD 7 / PRD 12):
+      - Data Model: `id`, `subject_id`, `experiment_number`, `title`,
+        `date_conducted`, `observation_status`, `record_status`, `marks`, `max_marks`.
+      - Observation State Machine (tracked separately from record):
+          * PENDING   ("Observation Pending")
+          * COMPLETED ("Observation Done")
+          * SIGNED    ("Observation Signed by Faculty")
+      - Record State Machine:
+          * PENDING   ("Record Pending")
+          * WRITTEN   ("Record Written")
+          * SUBMITTED ("Record Submitted to Lab Instructor")
+          * APPROVED  ("Record Approved & Graded")
+      - Lab Progress Banner:
+          Show total experiments count (e.g. 10), observations signed (e.g. 6/10),
+          and records approved (e.g. 5/10) with viva mark tracking.
+      - Mobile UI:
+          Embedded Laboratory tab in `SubjectDetailScreen.tsx` with dual
+          interactive chip toggles for Observation and Record per experiment.
+  [X] 3.5 Automatic Progress Rollup Formula (TAD 8.1 / PRD 12 & 21.1):
+      - Automatic deterministic rollup rules:
+          * Theory Subject Task Progress %:
+            (Count(Submitted Hand + Submitted Moodle + Graded) / Total Assignments) * 100
+          * Laboratory Subject Task Progress %:
+            ((Count(Signed Observations) + Count(Approved Records)) / (Total Experiments * 2)) * 100
+          * Semester Task Execution %:
+            (Total Completed Academic Work Items / Total Tracked Work Items) * 100
+      - Absolute Decoupling Enforcement:
+          * "Assignment completed" NEVER increases chapter "Learning Progress %".
+          * "Chapter learning progress = 100%" NEVER marks assignments completed.
+  [X] 3.6 Unified Task Engine & Dashboard Integration (TAD 7 / PRD 21):
+      - Consolidates Standalone Tasks, Pending Assignments, and Due Lab Records
+        into a single command center.
+      - Source Badges on Task cards: [ASSIGNMENT], [LAB RECORD], [LAB OBSERVATION], [TASK].
+      - Filter Chips in `TasksScreen.tsx`:
+          All | Next Action ★ | Pending | Assignments | Lab Records | Completed.
+      - Next Action Selector: User or system can promote any pending item to
+        primary Next Action, updating the Dashboard Hero card in real-time.
+  [X] 3.7 Automatic Chronological History & Activity Logger (TAD 6 / PRD 19):
+      - SQLite `history` table triggers:
+          * Transitioning assignment to SUBMITTED or GRADED auto-logs event.
+          * Approving lab record or signing observation auto-logs event.
+          * Completing a Next Action task auto-logs achievement timestamp.
+      - Manual retrospective logger in `HistoryScreen.tsx` with study duration,
+        subject linkages, and category filtering (All, Assignments, Lab Work, Tasks, Study).
+  [X] 3.8 Backend REST Endpoints & Comprehensive Test Suite:
+      - Endpoints in `backend/app/api/v1/endpoints/`:
+          * Assignments CRUD: GET/POST/PATCH/DELETE /subjects/{id}/assignments
+          * Lab Experiments CRUD: GET/POST/PATCH/DELETE /subjects/{id}/experiments
+          * Tasks CRUD: GET/POST/PATCH/DELETE /tasks
+          * History CRUD: GET/POST/PATCH/DELETE /history
+      - Pytest automated test suite in `test_task_engine_phase3` validating:
+          * 5-state assignment transitions and grading score storage.
+          * Observation and Record dual-state transitions.
+          * Automatic task progress rollup calculations.
+          * Strict dual-track independence verification.
+          * Next Action (★) filter on unified task board.
+          * Auto-generation of history log records upon completion.
+
+================================================================================
+6. PHASE 4: DOCUMENT INTELLIGENCE & GEMINI MULTIMODAL EXTRACTION
+================================================================================
+Goal: Allow students to upload raw academic calendars, circulars, or syllabi
+      and automatically extract structured milestones via backend Gemini API.
+
+Tasks:
+  [X] 4.1 Backend Gemini Vision Provider:
+      - Implemented `GeminiDocumentAIProvider` in `gemini_provider.py`.
+      - Uses official `google-genai` SDK with multimodal vision (PDF & images).
+      - Strict structured JSON response contract conforming to `DocumentExtractionContract`.
+      - Secure server-side isolation: API key never leaves backend environment.
+  [X] 4.2 Document REST Endpoints:
+      - `POST /semesters/{id}/documents`: Ingest file bytes.
+      - `POST /documents/{id}/process`: Asynchronously trigger Gemini extraction.
+      - `GET /documents/{id}/import`: Return normalized payload for review.
+      - `POST /documents/{id}/confirm`: Batch commit confirmed items into database.
+  [X] 4.3 Mobile Document Picker:
+      - Built file selection via `expo-document-picker` supporting PDFs and images.
+      - Built animated processing indicator while extraction executes.
+  [X] 4.4 Extraction Review & Confirmation Screen:
+      - Implemented `DocumentImportScreen.tsx`.
+      - Displays parsed dates, event titles, and categories (`instructional`,
+        `holiday`, `cat_exam`, `semester_exam`, `deadline`).
+      - Interactive checkboxes allowing the student to review, toggle, and edit
+        extracted data before saving to their local database.
+  [X] 4.5 Live Backend Network Integration:
+      - Connected mobile upload handler directly to live FastAPI backend URL via `src/services/api.ts`.
+      - Full multi-category review: Academic Events, Discovered Subjects, and Exam Schedules.
+      - Implemented client upload retry, graceful fallback, and offline queue fallback in SQLite `sync_queue`.
+      - Pytest automated test `test_document_processing_pipeline` verified 100% with full event, subject, and exam persistence.
+
+================================================================================
+7. PHASE 5: EXAM TIMETABLE INGESTION & DYNAMIC FILTERING
+================================================================================
+Goal: Ingest massive multi-department college exam timetables and filter them
+      dynamically by the student's programme and section.
+
+Tasks:
+  [X] 5.1 Exam Schemas & API Endpoints:
+      - Implemented `ExamBase`, `ExamCreate`, `ExamUpdate`, `ExamResponse` in `backend/app/schemas/exam.py`.
+      - Endpoints `GET /exams`, `POST /exams`, `GET/POST /subjects/{id}/exams`, `PATCH /exams/{id}` in `backend/app/api/v1/endpoints/exams.py`.
+      - Added dynamic query parameters: `programme`, `section`, `exam_type` with chronological date sorting.
+  [X] 5.2 Dynamic Timetable Filtering Engine:
+      - Document extraction contract parses: `programme`, `section`, `subject_code`, `session` (FN/AN), `exam_date`.
+      - Filter pipeline: input (Programme = B.Tech CSE, Section = A, Type = CAT1) filters in real time.
+      - Integrated into SQLite `exams` table and Zustand `useAppStore`.
+  [X] 5.3 Exam Center & Countdown UI:
+      - Built `mobile/src/features/exams/ExamCenterScreen.tsx` with:
+          * Nearest exam countdown hero banner (T-Days, Tomorrow, Today badge).
+          * Dynamic filter chips: Filter by Exam Type (All, CAT-1, CAT-2, CAT-3, Semester Finals, Labs).
+          * Dynamic programme & section chips based on active semester.
+          * Portions checklist modal with unit toggles and revision progress percentage.
+          * In-place score & target mark recording modal with instant SQLite persistence.
+  [X] 5.4 Dashboard Countdown Watchtower:
+      - Integrated Examination Watchtower banner in `DashboardScreen.tsx`.
+      - Displays nearest upcoming exam, days remaining countdown pill, session (FN/AN), and quick launch link to Exam Center.
+  [X] 5.5 Pytest Automated Verification:
+      - Added `test_exam_timetable_filtering_phase5` verifying programme filtering, section filtering, exam type filtering, and portion score updates.
+
+================================================================================
+8. PHASE 6: CONFIGURABLE MARKS & INTERNAL CALCULATOR ENGINE
+================================================================================
+Goal: Deliver an internal marks calculator tailored to university evaluation criteria
+      with strict scope enforcement (Theory Subjects Only 40-Mark Internal Scheme).
+
+Tasks:
+  [X] 6.1 Marks Data Model & Local State:
+      - Pydantic v2 schemas in `backend/app/schemas/marks.py`:
+          * `TheoryMarksCalculationRequest`, `TheoryMarksCalculationResponse`
+          * `MarksCalculationRequest`, `MarksCalculationResponse`
+          * `GradeProjectionRequest`, `GradeProjectionResponse`
+      - Client calculation engine in `mobile/src/features/marks/marksEngine.ts` for offline local-first calculations.
+  [X] 6.2 Theory-Only 40-Mark Internal Calculation Engine:
+      - STRICT RULE: Exclusively for subjects classified as "THEORY COURSES".
+      - Official Curriculum Course Split (4 Classifications):
+          1. THEORY COURSES: Evaluated with the 40-Mark Internal Scheme (5 Assignments + CAT 1/2/3).
+          2. LABORATORY ORIENTED THEORY COURSE: Lecture + Lab periods (Evaluation method pending update).
+          3. LABORATORY COURSES: Practical lab experiments, observation & record (Evaluation method pending update).
+          4. INDUSTRY ORIENTED COURSE: Specialized skill module (Evaluation method pending update).
+      - Dedicated Pending Notice Card:
+          * Shown whenever any non-theory course (Lab Oriented Theory, Lab, or Industry Oriented) is selected.
+          * Clearly informs student: "Calculation method for this course will be updated later. The current calculation is configured ONLY for THEORY COURSES. Please update the calculator when evaluation regulations are provided."
+          * Interactive course structure breakdown reference table and quick switch to theory courses.
+      - Mathematical Structure for Theory Courses (10 + 12 + 6 + 12 = 40):
+          * Assignments: 5 Chapters x (Raw / 10) * 2 = Max 10 Marks
+          * CAT 1 (Chapters 1 & 2): Raw / 25 -> Converted / 6 each = Max 12 Marks
+          * CAT 2 (Chapter 3): Raw / 25 -> Converted / 6 = Max 6 Marks
+          * CAT 3 (Chapters 4 & 5): Raw / 25 -> Converted / 6 each = Max 12 Marks
+      - Total Internal = 40 Marks.
+      - Real-time conversion display for every chapter raw mark.
+  [X] 6.3 Target Grade Projection ("What do I need on Semester Finals?"):
+      - Reverse-calculates required end-semester marks (out of 60) and 100-mark paper equivalent to reach target grade (90%, 80%, etc.).
+      - Feasibility guardrails: warns if score is mathematically unattainable (> 60 on finals) or already guaranteed (< 0).
+      - Dynamic visual status indicators (Achievable in Emerald, Unattainable in Red).
+  [X] 6.4 Interactive Marks Calculator Screen & App Integration:
+      - Built `mobile/src/features/marks/MarksCalculatorScreen.tsx` with:
+          * 5-way Horizontal Filter Tabs: ALL, THEORY COURSES, LABORATORY ORIENTED THEORY COURSE, LABORATORY COURSES, INDUSTRY ORIENTED COURSE.
+          * Theory subject selector chips with active status pills.
+          * Pending update notification card for non-theory courses with regulation reference table.
+          * Chapter-wise assignment table (5 rows with /10 raw inputs and /2 converted badges).
+          * CAT examination tables grouped by CAT 1 (Ch1 & 2), CAT 2 (Ch3), CAT 3 (Ch4 & 5).
+          * Subtotal badges: Assignments (/10), CATs (/30), and Final Total (/40).
+          * One-tap actions: Auto-fill from Course, Load Example Data, Reset.
+          * Target Grade Projection section for 60-mark final examinations.
+      - Integrated classification selectors & status indicators across:
+          * `SubjectsListScreen.tsx` (Add Subject modal with 4-tier category cards, category filter tabs, calc launch strip).
+          * `SubjectDetailScreen.tsx` (edit modal with 4-tier category cards, category badge, calc launch banner).
+          * `DashboardScreen.tsx` (Academic Tools launcher).
+      - Registered `MarksCalculator` in React Navigation stack.
+  [X] 6.5 Pytest Automated Verification:
+      - Added `test_theory_internal_mark_calculator_40_marks` verifying exact prompt reference numbers:
+        Assignments 42/50 -> 8.4/10, CATs 110/125 -> 26.4/30, Total 34.8/40 (87.0%). Passed 100%.
+
+================================================================================
+9. PHASE 7: INTELLIGENCE ENGINE (REMINDERS & SMART STUDY REASONING)
+================================================================================
+Goal: Proactive academic assistance that reasons over student progress metrics
+      without teaching or lecturing.
+
+Tasks:
+  [X] 7.1 Backend Study Suggestion Synthesizer:
+      - Implemented `POST /api/v1/intelligence/study-suggestions` in `backend/app/api/v1/endpoints/intelligence.py`.
+      - Leverages `GeminiDocumentAIProvider.generate_study_suggestions` using official `google-genai` SDK.
+      - Multi-factor synthesis: correlates low confidence (<5/10), pending assignments, due lab records, and upcoming exam dates.
+      - High-fidelity offline heuristic fallback engine when Gemini API is unavailable or offline.
+      - Zero lecturing rule: strictly suggests specific actionable tasks with time-blocks (e.g. 45 mins), never lectures.
+  [X] 7.2 Dashboard Recommendation Cards & Quick Actions:
+      - Surfaced intelligent recommendation cards directly on `DashboardScreen.tsx`.
+      - Highlights weak subject confidence and provides one-tap CTA buttons:
+          * "Open Syllabus Portions →" (SubjectDetail)
+          * "Calculate Target Score" (MarksCalculator)
+          * "Exam Center" (ExamCenter)
+      - Mobile API client method `fetchStudySuggestions` in `mobile/src/services/api.ts`.
+  [X] 7.3 State-Aware Notification Escalation & Ghost Alert Purging:
+      - Built notification service in `mobile/src/services/notifications.ts`:
+          * T-3 Days: Informational reminder (low urgency notification).
+          * T-1 Day: Warning alert (amber urgency notification).
+          * T-0 Day: Urgent reminder (immediate priority alert).
+      - State-aware auto-cancellation via `cancelRemindersForEntity`:
+          * Marking an assignment "SUBMITTED_HAND", "SUBMITTED_MOODLE", or "GRADED" automatically cancels all scheduled alerts.
+          * Approving a lab record immediately cancels pending record reminders.
+          * Completing a task cancels all associated notification alarms.
+      - Wired directly into `useAppStore.updateAssignmentStatus` and `toggleTaskStatus`.
+  [X] 7.4 Pytest Automated Verification:
+      - Added `test_intelligence_suggestions_phase7` verifying payload handling, urgent low-confidence recommendations, and model source tagging.
+
+================================================================================
+10. PHASE 8: GOOGLE CALENDAR BIDIRECTIONAL INTEGRATION
+================================================================================
+Goal: Export academic milestones to Google Calendar while preventing calendar
+      pollution from micro-tasks.
+
+Tasks:
+  [X] 8.1 Integration Schemas & Endpoints:
+      - Implemented `GET /integrations/google`, `POST /integrations/google/connect`,
+        `POST /integrations/google/sync`, `DELETE /integrations/google` in `backend/app/api/v1/endpoints/integrations.py`.
+      - Python 3.13 timezone-aware UTC datetime compliance via `utc_now()`.
+  [X] 8.2 OAuth 2.0 Authorization Flow & Mobile Service:
+      - Implemented `mobile/src/services/googleCalendarService.ts`:
+          * `getGoogleCalendarStatus()`: fetches active connection info or provides offline status.
+          * `connectGoogleCalendar()`: exchanges OAuth auth code and links student calendar.
+          * `syncGoogleCalendar()`: performs selective push and stamps local `google_event_id` in SQLite.
+          * `disconnectGoogleCalendar()`: unlinks account and clears integration state.
+  [X] 8.3 Selective Sync Engine & Deduplication:
+      - Strictest PRD Rule 26.2 enforcement: selective push of official academic milestones & exams.
+      - Personal micro-tasks are preserved locally and NEVER flood the student's personal calendar.
+      - Implemented `localEventId` <-> `google_event_id` bidirectional mapping preventing duplicate entries on repeated syncs.
+      - Integrated Google Calendar Status & Sync banner into `AcademicCalendarScreen.tsx` with live indicators.
+      - Embedded quick "Sync Exams to Google Calendar 📅" button into `ExamCenterScreen.tsx`.
+  [X] 8.4 Automated Test Suite:
+      - Added `test_google_calendar_integration_phase8` in `backend/tests/test_api.py` covering connect, selective sync, deduplication, and disconnect. Passed 100%.
+
+================================================================================
+11. PHASE 9: CLOUD SYNC, CONFLICT RESOLUTION & EAS PACKAGING
+================================================================================
+Goal: Bidirectional synchronization between local SQLite and Supabase PostgreSQL,
+      Row-Level Security, and production packaging.
+
+Tasks:
+  [X] 9.1 Local Sync Queue Architecture:
+      - Created `sync_queue` table in SQLite schema tracking entity mutations.
+      - Draining mechanism implemented in `mobile/src/services/syncManager.ts`.
+  [X] 9.2 Supabase PostgreSQL Database Setup:
+      - Created `backend/migrations/001_supabase_schema.sql` covering all 10 tables:
+        `semesters`, `subjects`, `chapters`, `assignments`, `experiments`, `exams`, `tasks`, `history`, `academic_events`, `sync_audit_log`.
+      - Established Granular Row-Level Security (RLS) policies enforcing `auth.uid()::text = user_id`.
+      - High-performance btree indexes across tenant and foreign key columns.
+  [X] 9.3 Bidirectional Sync Worker & LWW Conflict Resolution:
+      - Backend sync endpoints:
+          * `POST /api/v1/sync/push`: Drains batch client mutations with Last-Write-Wins (LWW) conflict resolution.
+          * `POST /api/v1/sync/pull`: Returns delta entity modifications since `since` timestamp.
+      - Mobile client worker:
+          * `mobile/src/services/syncManager.ts` draining `sync_queue` and reconciling remote delta updates.
+          * Header Cloud Sync button (`☁️`) on `Header.tsx` displaying live sync status and feedback.
+  [X] 9.4 Production Packaging:
+      - Created `mobile/eas.json` with development, preview (standalone APK for direct testing), and production (Play Store AAB) build profiles.
+      - Configured bundle identifiers (`com.metron.academic`) and dark scheme in `mobile/app.json`.
+      - Created production multi-stage `backend/Dockerfile` with Python 3.13, `uv` toolchain, non-root user `appuser`, and healthcheck probe.
+      - Created `backend/docker-compose.yml` for single-command production deployment.
+  [X] 9.5 Automated Test Suite:
+      - Added `test_cloud_sync_and_lww_conflict_resolution_phase9` in `backend/tests/test_api.py` verifying push batching, LWW conflict rejection, client-win updates, and delta pull. Passed 100%.
+
+================================================================================
+12. SELF-VERIFICATION & ARTIFACT AUDIT MATRIX
+================================================================================
+Audit performed on current codebase:
+
+Component                         Target Specification                 Status
+--------------------------------------------------------------------------------
+Python Runtime                    Python >= 3.13                       [X] VERIFIED (3.13.15)
+Backend Dependency Manager        uv                                   [X] VERIFIED
+Backend API Endpoints (TAD S14)   /api/v1 (13 domain modules)          [X] VERIFIED
+Backend Automated Test Suite      pytest (11/11 passing)               [X] VERIFIED (0.75s)
+Gemini Multimodal Isolation       Backend-only, google-genai SDK       [X] VERIFIED
+Mobile Framework                  React Native / Expo SDK 51+          [X] VERIFIED
+Mobile Language                   TypeScript (Strict)                  [X] VERIFIED (0 errors)
+Mobile Design System Tokens       color.txt / brand.txt dark theme     [X] VERIFIED
+Mobile Local Storage              expo-sqlite (10 tables)              [X] VERIFIED
+Mobile State Management           Zustand (useAppStore)                [X] VERIFIED
+Mobile Bottom Navigation          5 tabs (Home, Subjects, Cal, Task,   [X] VERIFIED
+                                  History)
+Mobile Document Review Screen     TAD Section 10/11 Review & Confirm   [X] VERIFIED
+Dual-Track Progress Principle     Manual Learning vs Automatic Task    [X] VERIFIED
+Google Calendar Selective Sync    PRD Sec 26 selective sync + dedup    [X] VERIFIED
+Cloud Sync & LWW Conflict Engine  sync_queue drain + LWW delta pull    [X] VERIFIED
+Supabase PostgreSQL & RLS         001_supabase_schema.sql (10 tables)  [X] VERIFIED
+Production Packaging              eas.json + Dockerfile (Python 3.13)  [X] VERIFIED
+
+================================================================================
+END OF PLAN.TXT
+================================================================================

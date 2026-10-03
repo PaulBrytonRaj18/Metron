@@ -1,0 +1,1710 @@
+============================================================
+ACADEMIC CONTROL
+PRODUCT REQUIREMENTS DOCUMENT
+============================================================
+
+VERSION: 1.0
+STATUS: Initial Product Specification
+PLATFORM: Mobile
+TARGET: Android first, iOS compatible architecture
+PRODUCT TYPE: Academic Execution & Tracking System
+
+
+============================================================
+1. PRODUCT VISION
+============================================================
+
+Academic Control is a personal academic management application
+designed to help college students systematically track and manage
+their academic responsibilities throughout a semester.
+
+The application does NOT teach subjects.
+
+It does NOT primarily function as an LMS, tutoring application,
+study-content platform, or learning assistant.
+
+Its primary purpose is:
+
+    "Know what I need to do.
+     Know what I have completed.
+     Know what is pending.
+     Know how far I have progressed.
+     Know what is coming next."
+
+The application converts user-provided academic information,
+academic calendars, examination timetables, subjects, chapters,
+assignments, laboratory work, marks and personal tracking data
+into a structured academic control system.
+
+
+============================================================
+2. CORE PRODUCT PRINCIPLE
+============================================================
+
+NOTHING ACADEMIC SHOULD BE HARDCODED.
+
+The application must NOT contain hardcoded:
+
+- College academic dates
+- CAT dates
+- Cycle Test dates
+- Assignment deadlines
+- Unit completion dates
+- Examination dates
+- Subject names
+- Subject codes
+- Subject credits
+- Chapter names
+- Assignment names
+- Laboratory experiments
+- Marking schemes
+- Internal calculation formulas
+- Timetable information
+- Academic year
+- Semester information
+- Reminder dates
+- College-specific academic rules
+
+All such information must originate from:
+
+1. User input
+2. Uploaded documents
+3. Parsed information confirmed by the user
+4. User-created tasks/events
+5. Configurable application settings
+
+The application itself provides the SYSTEM.
+
+The user provides the ACADEMIC DATA.
+
+
+============================================================
+3. PRIMARY OBJECTIVES
+============================================================
+
+The application should help the student:
+
+1. Track every academic responsibility.
+2. Track assignments.
+3. Track laboratory records.
+4. Track observations.
+5. Track chapter/unit completion.
+6. Track confidence in subjects and chapters.
+7. Track CAT marks.
+8. Calculate internal marks using user-configured rules.
+9. Track academic deadlines.
+10. Automatically process academic calendars.
+11. Automatically process examination timetables.
+12. Generate a structured semester timeline.
+13. Generate Google Calendar events from confirmed academic data.
+14. Show what needs attention next.
+15. Maintain a history of academic activity.
+16. Provide smart study suggestions.
+17. Provide reminders and escalation when tasks are ignored.
+18. Keep learning progress separate from task completion.
+19. Synchronize and back up the student's data.
+
+
+============================================================
+4. TARGET USER
+============================================================
+
+PRIMARY USER
+
+A college student who wants detailed control over their academic
+semester.
+
+INITIAL PRODUCT
+
+Designed primarily for the creator's own academic workflow.
+
+FUTURE PRODUCT
+
+Can evolve into a general-purpose academic management application
+for other college students.
+
+The underlying architecture must therefore avoid assumptions that
+only apply to one college.
+
+
+============================================================
+5. CORE PRODUCT MODEL
+============================================================
+
+The application is organized around:
+
+Academic Year
+    ↓
+Semester
+    ↓
+Programme
+    ↓
+Department
+    ↓
+Section
+    ↓
+Subjects
+    ↓
+Units / Chapters
+    ↓
+Academic Work
+        ├── Assignments
+        ├── Records
+        ├── Observations
+        ├── Exams
+        └── Other user-created academic tasks
+
+
+============================================================
+6. SEMESTER SETUP
+============================================================
+
+The student creates a semester.
+
+Required information may include:
+
+- Academic Year
+- Semester
+- Year of Study
+- Department
+- Programme
+- Section
+- Semester start date
+- Semester end date
+
+The user may upload:
+
+- Academic Calendar
+- Examination Timetable
+- Other relevant academic documents
+
+The application analyzes uploaded documents and extracts
+potential academic events.
+
+The extracted information MUST be shown to the user for
+confirmation before becoming official application data.
+
+
+------------------------------------------------------------
+6.1 SEMESTER IMPORT WORKFLOW
+------------------------------------------------------------
+
+STEP 1
+User creates semester.
+
+STEP 2
+User enters/selects:
+
+- Academic Year
+- Semester
+- Year
+- Department
+- Programme
+- Section
+
+STEP 3
+User uploads Academic Calendar.
+
+STEP 4
+Application analyzes the document.
+
+STEP 5
+Application extracts relevant information.
+
+Examples:
+
+- Reopening date
+- Unit completion dates
+- CAT dates
+- Cycle Test dates
+- Assignment deadlines
+- Feedback dates
+- LWD
+- Practical exam period
+- Theory exam period
+- Holidays
+- Other recognized academic events
+
+STEP 6
+Application shows extracted information.
+
+Example:
+
+    Detected Academic Events
+
+    CAT-I
+    05 Oct 2026 – 09 Oct 2026
+
+    Unit III Completion
+    29 Oct 2026
+
+    CAT-II
+    03 Nov 2026
+
+    ...
+
+STEP 7
+User confirms / edits / rejects extracted information.
+
+STEP 8
+Confirmed information becomes semester data.
+
+STEP 9
+User uploads examination timetable.
+
+STEP 10
+Application identifies the timetable applicable to the
+user's programme/section.
+
+STEP 11
+User confirms the detected timetable.
+
+STEP 12
+Confirmed examination events are added to the semester.
+
+STEP 13
+Application can prepare Google Calendar events.
+
+
+============================================================
+7. DOCUMENT INTELLIGENCE
+============================================================
+
+The application must support academic document ingestion powered by the Gemini API.
+
+SUPPORTED INPUT TYPES:
+
+- PDF
+- Image
+
+Future possibilities:
+
+- DOCX
+- Spreadsheet
+- Other structured academic documents
+
+
+------------------------------------------------------------
+7.1 DOCUMENT ANALYSIS
+------------------------------------------------------------
+
+The system should use the Gemini API's multimodal capabilities to:
+
+1. Read the document (PDFs and Images).
+2. Identify tables and unstructured text.
+3. Identify dates.
+4. Identify event names.
+5. Identify academic terminology.
+6. Identify programme/department/section context.
+7. Extract relevant information into structured data.
+8. Ignore irrelevant sections when possible.
+9. Present extracted information for confirmation.
+
+
+------------------------------------------------------------
+7.2 IMPORTANT RULE
+------------------------------------------------------------
+
+Document parsing must NOT silently assume information.
+
+If the application is uncertain:
+
+    "Could not confidently identify this information."
+
+The user should be able to manually correct it.
+
+
+============================================================
+8. SUBJECT MANAGEMENT
+============================================================
+
+The user creates subjects for a semester.
+
+Subject fields:
+
+- Subject name
+- Subject code
+- Credits
+- Subject type
+- Units / Chapters
+
+Subject types:
+
+- Theory
+- Laboratory
+
+Additional fields may be added later through configurable
+subject metadata.
+
+The user controls the subject structure.
+
+
+============================================================
+9. THEORY SUBJECTS
+============================================================
+
+Theory subjects contain:
+
+Subject
+    ↓
+Units / Chapters
+    ↓
+Assignments
+    ↓
+CAT marks
+    ↓
+Learning progress
+    ↓
+Confidence
+    ↓
+Semester examination
+
+
+------------------------------------------------------------
+9.1 CHAPTER / UNIT TRACKING
+------------------------------------------------------------
+
+Each chapter/unit can contain:
+
+- Name
+- Description (optional)
+- Learning progress
+- Confidence
+- Assignments associated with the chapter
+- Notes/history (optional)
+
+LEARNING PROGRESS:
+
+The user manually enters learning progress.
+
+Example:
+
+    Unit I
+    Learning Progress: 70%
+    Confidence: 6/10
+
+    Unit II
+    Learning Progress: 40%
+    Confidence: 4/10
+
+
+------------------------------------------------------------
+9.2 LEARNING PROGRESS VS TASK PROGRESS
+------------------------------------------------------------
+
+These MUST remain separate.
+
+LEARNING PROGRESS:
+
+Manual.
+
+Example:
+
+    Discrete Mathematics
+    Unit II
+    Learning Progress = 60%
+
+TASK PROGRESS:
+
+Automatic.
+
+Example:
+
+    Assignment 1 = Submitted
+    Assignment 2 = Completed
+    Assignment 3 = Not Finished
+
+The application must never treat:
+
+    "Assignment completed"
+
+as equivalent to:
+
+    "Chapter learned."
+
+Likewise:
+
+    "Chapter learning progress = 100%"
+
+does not automatically complete related assignments.
+
+
+============================================================
+10. CONFIDENCE TRACKING
+============================================================
+
+The user can manually set confidence for:
+
+1. Subject
+2. Individual chapter/unit
+
+Suggested representation:
+
+    0–10
+
+The user can increase or decrease confidence manually.
+
+Example:
+
+    DPCO
+    Confidence: 7/10
+
+    Unit I: 8/10
+    Unit II: 6/10
+    Unit III: 3/10
+    Unit IV: 7/10
+    Unit V: 2/10
+
+The application may use confidence as an input for smart
+suggestions.
+
+The application must NOT automatically modify confidence.
+
+
+============================================================
+11. ASSIGNMENT MANAGEMENT
+============================================================
+
+Assignments belong primarily to theory subjects.
+
+Each assignment should contain:
+
+- Assignment name
+- Subject
+- Chapter / Unit
+- Due date
+- Status
+- Mark (after graded)
+- Maximum mark
+- Optional description
+- Optional attachment
+- History
+
+
+------------------------------------------------------------
+11.1 ASSIGNMENT STATUS
+------------------------------------------------------------
+
+Allowed statuses:
+
+1. Not Finished
+2. Completed
+3. Submitted on Hand
+4. Submitted on Moodle
+5. Graded
+
+No separate statuses for:
+
+- Draft
+- Late
+- Returned
+- Corrections Required
+- Resubmitted
+
+unless the user later requests them.
+
+
+------------------------------------------------------------
+11.2 GRADING
+------------------------------------------------------------
+
+When status becomes:
+
+    Graded
+
+the application asks:
+
+    "Enter your mark"
+
+Then:
+
+    Mark obtained: ___
+    Out of: ___
+
+Example:
+
+    8 / 10
+
+
+------------------------------------------------------------
+11.3 ASSIGNMENT-CHAPTER CONNECTION
+------------------------------------------------------------
+
+Every assignment should optionally/ideally be linked to a
+specific chapter/unit.
+
+Example:
+
+    OOP
+    Unit II
+        └── Assignment 2
+            └── 8/10
+
+This enables chapter-level academic tracking.
+
+
+============================================================
+12. LABORATORY SUBJECTS
+============================================================
+
+Laboratory subjects have a different tracking model.
+
+They primarily contain:
+
+- Experiments
+- Record
+- Observation
+- Cycle Tests
+- Practical Semester Exam
+
+
+------------------------------------------------------------
+12.1 EXPERIMENT TRACKING
+------------------------------------------------------------
+
+The user should define:
+
+    Total Experiments
+
+The application tracks:
+
+    Experiments Finished
+    Experiments Submitted
+
+Example:
+
+    Physics Laboratory
+
+    Total Experiments: 10
+    Finished: 7
+    Submitted: 5
+
+
+------------------------------------------------------------
+12.2 RECORD TRACKING
+------------------------------------------------------------
+
+Record progress is associated with the laboratory subject.
+
+Example:
+
+    Record
+    7 / 10 experiments completed
+
+The user should be able to update the status of individual
+experiments.
+
+
+------------------------------------------------------------
+12.3 OBSERVATION TRACKING
+------------------------------------------------------------
+
+Observation is tracked separately from Record.
+
+Example:
+
+    Observation
+    6 / 10 completed
+    5 / 10 submitted
+
+
+============================================================
+13. EXAM MANAGEMENT
+============================================================
+
+The application supports:
+
+THEORY SUBJECTS:
+
+- CAT 1
+- CAT 2
+- CAT 3
+- Theory Semester Examination
+
+LAB SUBJECTS:
+
+- Cycle Test 1
+- Cycle Test 2
+- Cycle Test 3
+- Practical Semester Examination
+
+Semester examination marks do NOT need to be tracked.
+
+Semester examination dates/times should be tracked.
+
+CAT/Cycle Test marks should be manually entered.
+
+
+------------------------------------------------------------
+13.1 EXAM IMPORT
+------------------------------------------------------------
+
+The application can extract examination dates from uploaded
+timetables.
+
+The application must filter based on:
+
+- Department
+- Programme
+- Section
+
+The application must not import examinations belonging to
+unrelated programmes.
+
+
+============================================================
+14. CAT MARK TRACKING
+============================================================
+
+Each theory subject supports:
+
+CAT 1
+CAT 2
+CAT 3
+
+Each CAT has:
+
+- Exam date
+- Mark obtained
+- Maximum mark
+- Optional notes
+
+Example:
+
+    DPCO
+
+    CAT 1
+    42 / 50
+
+    CAT 2
+    45 / 50
+
+    CAT 3
+    44 / 50
+
+
+============================================================
+15. INTERNAL MARK CALCULATOR
+============================================================
+
+The application should calculate internal marks using:
+
+- CAT marks
+- Assignment marks
+
+The calculation formula MUST be configurable.
+
+The application must NOT hardcode a college/university formula.
+
+The formula should come from:
+
+- User configuration
+OR
+- Imported academic rules
+OR
+- Future configurable academic scheme
+
+The application should clearly show:
+
+    Inputs
+    ↓
+    Calculation
+    ↓
+    Result
+
+
+Example:
+
+    CAT marks
+    +
+    Assignment marks
+    ↓
+    Internal calculation
+    ↓
+    Current internal mark
+
+
+============================================================
+16. ACADEMIC CALENDAR
+============================================================
+
+The Academic Calendar is the main semester timeline source.
+
+The application should extract relevant events from the uploaded
+calendar.
+
+Examples of possible event categories:
+
+- Semester Start
+- Reopening
+- Unit Completion
+- CAT
+- Cycle Test
+- Assignment Deadline
+- Feedback
+- CCM
+- CoCM
+- LWD
+- Practical Examination
+- Theory Examination
+- Holiday
+- Other detected events
+
+
+------------------------------------------------------------
+16.1 USER CONTROL
+------------------------------------------------------------
+
+Every imported event must be editable.
+
+The user can:
+
+- Edit
+- Delete
+- Disable
+- Change date
+- Change title
+- Change category
+- Add notes
+
+
+============================================================
+17. TIMETABLE
+============================================================
+
+Timetable is NOT part of the initial primary dashboard.
+
+However, the application should support timetable data.
+
+Future functionality may include:
+
+- Weekly timetable
+- Subject schedule
+- Class schedule
+- Timetable-based reminders
+
+The timetable should remain user/document generated.
+
+
+============================================================
+18. ATTENDANCE
+============================================================
+
+Attendance tracking is OUT OF SCOPE for Version 1.
+
+
+============================================================
+19. HOME DASHBOARD
+============================================================
+
+The dashboard has TWO primary purposes:
+
+A. WHAT SHOULD I DO NEXT?
+B. WHERE DO I CURRENTLY STAND?
+
+
+------------------------------------------------------------
+19.1 PRIMARY SECTION — NEXT THINGS
+------------------------------------------------------------
+
+The most prominent section should show upcoming/pending work.
+
+Example:
+
+    NEXT
+
+    DPCO Assignment 2
+    Due tomorrow
+
+    Physics Record
+    3 experiments pending
+
+    Discrete Mathematics
+    CAT-I approaching
+
+    OOP Assignment 3
+    Not finished
+
+
+Every item should belong to a specific subject.
+
+
+------------------------------------------------------------
+19.2 SECONDARY SECTION — CURRENT PROGRESS
+------------------------------------------------------------
+
+Show:
+
+- Overall semester task progress
+- Subject task progress
+- Learning progress
+- Confidence
+- Upcoming academic milestones
+- Pending work
+
+
+------------------------------------------------------------
+19.3 IMPORTANT RULE
+------------------------------------------------------------
+
+The dashboard should NOT primarily be a generic analytics screen.
+
+It should answer:
+
+    "What should I care about right now?"
+
+while still showing:
+
+    "How am I doing overall?"
+
+
+============================================================
+20. SUBJECT DASHBOARD
+============================================================
+
+Every subject has its own dashboard.
+
+Example:
+
+    DISCRETE MATHEMATICS
+
+    Learning
+    62%
+
+    Confidence
+    6/10
+
+    Tasks
+    8 / 12 completed
+
+    Assignments
+    2 pending
+
+    CAT
+    CAT-I: 42/50
+
+    Chapters
+    Unit I     100%
+    Unit II     70%
+    Unit III    30%
+    Unit IV      0%
+    Unit V       0%
+
+    NEXT
+    Assignment 2
+    Due: 06 Oct
+
+
+============================================================
+21. TASK SYSTEM
+============================================================
+
+The task system is central to the application.
+
+Every academic responsibility should belong to its relevant
+subject.
+
+Examples:
+
+Theory:
+
+    DPCO
+      └── Assignment 1
+      └── Assignment 2
+
+Lab:
+
+    Physics Laboratory
+      └── Experiment 4 Record
+      └── Experiment 4 Observation
+
+The application should make it easy to see:
+
+    Subject → What needs to happen next?
+
+
+------------------------------------------------------------
+21.1 TASK PROGRESS
+------------------------------------------------------------
+
+Task progress is calculated automatically from task states.
+
+Example:
+
+    10 tasks
+    7 completed
+    2 submitted
+    1 not finished
+
+The application calculates task completion based on the
+configured task state rules.
+
+
+============================================================
+22. SMART STUDY SUGGESTIONS
+============================================================
+
+The application should provide suggestions, but NOT teach.
+The Gemini API can optionally be utilized to analyze the student's progress and generate highly contextual study recommendations based on the following inputs:
+
+Suggestions may use:
+
+- Upcoming examination
+- Upcoming deadline
+- Chapter learning progress
+- Chapter confidence
+- Pending assignments
+- Pending records
+- Pending observations
+- Academic calendar
+- User-defined priorities
+- Recent progress
+
+Example:
+
+    Suggested next action
+
+    Discrete Mathematics — Unit II
+
+    CAT-I is approaching.
+    Learning progress: 45%
+    Confidence: 4/10
+
+    Suggested:
+    Spend time completing Unit II.
+
+The user can:
+
+    Add as Task
+
+or
+
+    Ignore
+
+
+============================================================
+23. REMINDER SYSTEM
+============================================================
+
+Reminder behavior should be based entirely on user data and
+configured academic information.
+
+The application must NOT contain hardcoded college deadlines.
+
+Reminder sources can include:
+
+- User-created due dates
+- Imported academic calendar
+- Imported examination timetable
+- User-created events
+- Recurring academic tasks
+- User-defined reminder preferences
+
+
+------------------------------------------------------------
+23.1 REMINDER LEVELS
+------------------------------------------------------------
+
+The user requested smart reminders with escalation.
+
+Example:
+
+LEVEL 1:
+
+    "DPCO Assignment 2 is due in 3 days."
+
+LEVEL 2:
+
+    "DPCO Assignment 2 is due tomorrow.
+     Current status: Not Finished."
+
+LEVEL 3:
+
+    "DPCO Assignment 2 is due today.
+     Current status: Not Finished."
+
+Escalation behavior should be configurable.
+
+The system should avoid excessive notifications.
+
+
+============================================================
+24. RECURRING TASKS
+============================================================
+
+The application supports recurring academic work.
+
+Examples:
+
+- Weekly record update
+- Weekly observation update
+- Weekly assignment review
+- Weekly academic review
+- Personal study review
+
+Recurring tasks are configured by the user.
+
+No recurring academic schedule should be hardcoded.
+
+
+============================================================
+25. HISTORY
+============================================================
+
+The application maintains an academic history.
+
+History is NOT limited to automatically generated activity.
+
+The user must be able to manually create history entries.
+
+Each history entry contains:
+
+- Date
+- Title
+- Description
+- Subject
+- Category
+- Optional attachment
+
+
+------------------------------------------------------------
+25.1 SUBMISSION HISTORY
+------------------------------------------------------------
+
+Assignments, records and observations should maintain submission
+history.
+
+Example:
+
+    Assignment 2
+
+    04 Oct
+    Submitted on Hand
+
+    05 Oct
+    Submitted on Moodle
+
+    07 Oct
+    Graded
+    8/10
+
+
+This allows the user to see the complete history of an academic
+responsibility.
+
+
+============================================================
+26. GOOGLE CALENDAR INTEGRATION
+============================================================
+
+The application should support Google Calendar integration.
+
+Two categories:
+
+A. OFFICIAL ACADEMIC EVENTS
+B. PERSONAL ACADEMIC TASKS
+
+
+------------------------------------------------------------
+26.1 OFFICIAL EVENTS
+------------------------------------------------------------
+
+After document processing and user confirmation:
+
+    Academic Calendar
+          ↓
+    Confirmed Events
+          ↓
+    Google Calendar
+
+These can be automatically prepared/pushed according to user
+permission.
+
+
+------------------------------------------------------------
+26.2 PERSONAL TASKS
+------------------------------------------------------------
+
+Personal tasks should NOT automatically flood Google Calendar.
+
+The user should be able to choose:
+
+    Add to Google Calendar
+
+for individual tasks or selected tasks.
+
+
+------------------------------------------------------------
+26.3 GOOGLE CALENDAR PERMISSION
+------------------------------------------------------------
+
+Calendar access must require explicit user authorization.
+
+The user must be able to disconnect Google Calendar.
+
+
+============================================================
+27. NOTIFICATIONS
+============================================================
+
+Notification sources:
+
+- Upcoming assignment
+- Upcoming record requirement
+- Upcoming observation requirement
+- Upcoming exam
+- Upcoming academic milestone
+- User-created task
+- Recurring task
+- Smart suggestion
+- Ignored task escalation
+
+
+Notifications must always reference actual application data.
+
+
+============================================================
+28. DATA STORAGE
+============================================================
+
+Architecture:
+
+LOCAL-FIRST + CLOUD BACKUP/SYNC
+
+The application should remain useful without constant internet
+connection.
+
+Local data:
+
+- Subjects
+- Chapters
+- Assignments
+- Records
+- Observations
+- Marks
+- Progress
+- Confidence
+- History
+- Tasks
+
+Cloud:
+
+- Account data
+- Backup
+- Synchronization
+- Uploaded documents
+- Parsed academic information
+
+
+============================================================
+29. ACCOUNT
+============================================================
+
+The user should be able to:
+
+- Create account
+- Sign in
+- Sign out
+- Sync data
+- Restore data
+- Delete account/data
+
+Authentication provider can be decided during technical design.
+
+
+============================================================
+30. DATA MODEL — INITIAL
+============================================================
+
+USER
+
+    id
+    name
+    email
+    preferences
+
+
+SEMESTER
+
+    id
+    userId
+    academicYear
+    semester
+    yearOfStudy
+    department
+    programme
+    section
+    startDate
+    endDate
+
+
+ACADEMIC_DOCUMENT
+
+    id
+    semesterId
+    type
+    file
+    uploadedAt
+    processingStatus
+
+
+ACADEMIC_EVENT
+
+    id
+    semesterId
+    title
+    category
+    startDate
+    endDate
+    source
+    confirmed
+    editable
+
+
+SUBJECT
+
+    id
+    semesterId
+    name
+    code
+    credits
+    type
+
+
+CHAPTER
+
+    id
+    subjectId
+    name
+    learningProgress
+    confidence
+
+
+ASSIGNMENT
+
+    id
+    subjectId
+    chapterId
+    title
+    dueDate
+    status
+    mark
+    maxMark
+    description
+
+
+LAB_EXPERIMENT
+
+    id
+    subjectId
+    experimentNumber
+    title
+    recordStatus
+    observationStatus
+    submitted
+
+
+EXAM
+
+    id
+    subjectId
+    type
+    date
+    time
+    mark
+    maxMark
+
+
+TASK
+
+    id
+    subjectId
+    type
+    title
+    dueDate
+    status
+    source
+    recurrence
+
+
+HISTORY_ENTRY
+
+    id
+    userId
+    subjectId
+    date
+    title
+    description
+    category
+    attachment
+
+
+CONFIDENCE
+
+    subjectId
+    chapterId
+    value
+
+
+INTERNAL_MARK_RULE
+
+    id
+    semesterId
+    configuration
+    formula
+
+
+CALENDAR_SYNC
+
+    id
+    userId
+    googleCalendarId
+    syncSettings
+
+
+============================================================
+31. MAIN APP NAVIGATION
+============================================================
+
+Recommended initial navigation:
+
+    HOME
+    SUBJECTS
+    CALENDAR
+    TASKS
+    HISTORY
+
+
+------------------------------------------------------------
+HOME
+------------------------------------------------------------
+
+    Next Things
+    Current Progress
+    Upcoming Events
+    Smart Suggestions
+
+
+------------------------------------------------------------
+SUBJECTS
+------------------------------------------------------------
+
+    All Subjects
+
+    Theory
+    Laboratory
+
+
+------------------------------------------------------------
+CALENDAR
+------------------------------------------------------------
+
+    Month
+    Week
+    Agenda
+
+
+------------------------------------------------------------
+TASKS
+------------------------------------------------------------
+
+    Today
+    Upcoming
+    Pending
+    Completed
+
+
+------------------------------------------------------------
+HISTORY
+------------------------------------------------------------
+
+    Timeline
+    Submissions
+    Manual Entries
+
+
+============================================================
+32. SUBJECT DETAIL NAVIGATION
+============================================================
+
+Subject page:
+
+    Overview
+    Chapters
+    Assignments
+    Exams
+    Lab Work
+    History
+
+
+For Theory:
+
+    Overview
+    Chapters
+    Assignments
+    CATs
+    Internal Marks
+    History
+
+
+For Laboratory:
+
+    Overview
+    Experiments
+    Record
+    Observation
+    Cycle Tests
+    Practical Exam
+    History
+
+
+============================================================
+33. SEMESTER IMPORT UI
+============================================================
+
+The import experience should be highly transparent.
+
+Example:
+
+    IMPORT ACADEMIC CALENDAR
+
+    Upload document
+          ↓
+    Analyzing...
+          ↓
+    34 academic events detected
+          ↓
+
+    Review
+
+    ✓ CAT-I
+    ✓ CAT-II
+    ✓ CAT-III
+    ✓ Unit completion dates
+    ✓ Assignment deadlines
+    ✓ Practical examination
+    ✓ Theory examination
+
+    [Confirm All]
+
+The user should always remain in control.
+
+
+============================================================
+34. ERROR HANDLING
+============================================================
+
+If document extraction is incomplete:
+
+    "Some information could not be identified."
+
+The user can:
+
+    Add manually
+    Edit detected information
+    Ignore
+
+
+The system must never fabricate academic events.
+
+
+============================================================
+35. MVP — VERSION 1
+============================================================
+
+MUST HAVE:
+
+1. User account
+2. Semester creation
+3. Department/programme/section
+4. Academic calendar upload
+5. Academic calendar extraction
+6. Extraction confirmation
+7. Subject creation
+8. Theory subjects
+9. Laboratory subjects
+10. Chapter/unit tracking
+11. Manual learning progress
+12. Manual confidence
+13. Assignment tracking
+14. Assignment status
+15. Assignment marks
+16. Record tracking
+17. Observation tracking
+18. CAT tracking
+19. Cycle Test tracking
+20. Configurable internal mark calculator
+21. Task system
+22. Automatic task progress
+23. Academic event timeline
+24. Dashboard
+25. Subject dashboard
+26. Smart suggestions
+27. Smart reminders
+28. Manual history
+29. Submission history
+30. Local storage
+31. Cloud backup
+32. Google Calendar integration
+33. Examination timetable upload
+34. Programme/section-specific timetable filtering
+
+
+============================================================
+36. POST-MVP
+============================================================
+
+Possible future features:
+
+- Full timetable management
+- Attendance
+- Advanced analytics
+- Semester comparison
+- GPA/CGPA tracking
+- Academic performance prediction
+- Multiple calendar sources
+- OCR improvements
+- Automatic assignment detection
+- College-specific parsing profiles
+- Widgets
+- Wear OS support
+- Web dashboard
+- Parent/mentor view
+- Multi-semester analytics
+- Public student version
+
+
+============================================================
+37. NON-GOALS
+============================================================
+
+Version 1 will NOT attempt to become:
+
+- Learning platform
+- AI tutor
+- Subject teacher
+- Course platform
+- Notes platform
+- LMS replacement
+- Attendance management system
+- College ERP
+- Social network for students
+
+The app's core responsibility is:
+
+    TRACK
+    ORGANIZE
+    REMIND
+    VISUALIZE
+    ANALYZE
+    EXECUTE
+
+
+============================================================
+38. SUCCESS CRITERIA
+============================================================
+
+A student should be able to open the application and answer
+within seconds:
+
+1. What do I need to do next?
+2. What deadlines are approaching?
+3. What academic work is incomplete?
+4. How much of each subject have I learned?
+5. How confident am I in each subject/chapter?
+6. Which assignments are pending?
+7. Which records/observations are pending?
+8. What CAT/exam is coming next?
+9. What marks have I obtained?
+10. What has already been submitted?
+11. What happened academically over time?
+
+
+============================================================
+39. CORE PRODUCT LOOP
+============================================================
+
+IMPORT
+
+Academic Calendar
+      +
+Examination Timetable
+      +
+User Academic Data
+
+            ↓
+
+STRUCTURE
+
+Semester
+      ↓
+Subjects
+      ↓
+Chapters
+      ↓
+Assignments / Labs / Exams
+
+            ↓
+
+EXECUTE
+
+Complete Work
+      ↓
+Update Status
+      ↓
+Enter Marks
+      ↓
+Update Learning Progress
+      ↓
+Update Confidence
+
+            ↓
+
+MONITOR
+
+Dashboard
+      ↓
+Next Action
+      ↓
+Progress
+      ↓
+Upcoming Deadlines
+      ↓
+Smart Suggestions
+
+            ↓
+
+REVIEW
+
+History
+      ↓
+Submission History
+      ↓
+Academic Progress
+
+            ↓
+
+REPEAT
+
+
+============================================================
+40. PRODUCT NORTH STAR
+============================================================
+
+The application should reduce academic uncertainty.
+
+When the student opens the app, there should be no need to think:
+
+    "What am I supposed to be doing?"
+
+The application should present:
+
+    "Here is what exists.
+     Here is what is pending.
+     Here is what is next.
+     Here is where you currently stand."
+
+
+============================================================
+END OF PRD v1.0
+============================================================
